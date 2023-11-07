@@ -1,0 +1,8 @@
+---
+title: "RNA-seq analyis on clam gonad samples"
+author: "Megan Ewing"
+format: 
+  html:
+    toc: true
+---
+

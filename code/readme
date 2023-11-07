@@ -1,0 +1,6 @@
+code for this process
+
+only one code file, but if multiple, naming scheme is 
+`##-description` where ## is the number of the step (step 1 being ran first, step 2 second...)
+
+if multiple versions of same code file (ie. wantimng to save a previous version of the code for whatever reason), the ## is the date of last edit on that version
