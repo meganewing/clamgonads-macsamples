@@ -8,12 +8,219 @@ date: "2023-11-27"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+kallisto info and location on Raven
+
 ```{bash}
 
 /home/shared/kallisto/kallisto
 ```
 
+## Retrieving the [reference genome](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026571515.1/)
+
 ```{bash}
+
+curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_026571515.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA,SEQUENCE_REPORT&filename=GCF_026571515.1.zip" -H "Accept: application/zip" 
+```
+
+moving the reference file to proper folder
+
+```{bash}
+
+mv GCF_026571515.1.zip ../data/
+
+```
+
+## Building Index
+
+```{bash}
+
+/home/shared/kallisto/kallisto index -i transcripts.idx ../data/GCF_026571515.1.zip
+
+```
+
+# Quantification
+
+### code breakdown :
+
+`/home/shared/kallisto/kallisto` kallisto path
+
+`quant` tells kallisto to run the quantification algorithm
+
+`-i transcripts.idx` specifies the `-i` index file (created in previous step)
+
+`-o ../output/kallisto/sampleID/` specifies the `-o` output directory
+
+`-b 100` creates 100 `-b` bootstraps. Included in [Kallisto tutorial](https://pachterlab.github.io/kallisto/starting) does not influence quantification output.
+
+`…/data/raw/sampleID_R1_001.fastq.gz` read 1 of the sample
+
+`…/data/raw/sampleID_R2_001.fastq.gz` read 2 of the sample
+
+## Control Sample Quantification
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-216/ -b 100  ../data/raw/M-C-216_R1_001.fastq.gz ../data/raw/M-C-216_R2_001.fastq.gz
+
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-218/ -b 100  ../data/raw/M-C-218_R1_001.fastq.gz ../data/raw/M-C-218_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-226/ -b 100  ../data/raw/M-C-226_R1_001.fastq.gz ../data/raw/M-C-226_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-306/ -b 100  ../data/raw/M-C-306_R1_001.fastq.gz ../data/raw/M-C-306_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-329/ -b 100  ../data/raw/M-C-329_R1_001.fastq.gz ../data/raw/M-C-329_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-334/ -b 100  ../data/raw/M-C-334_R1_001.fastq.gz ../data/raw/M-C-334_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-337/ -b 100  ../data/raw/M-C-337_R1_001.fastq.gz ../data/raw/M-C-337_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-339/ -b 100  ../data/raw/M-C-339_R1_001.fastq.gz ../data/raw/M-C-339_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-358/ -b 100  ../data/raw/M-C-358_R1_001.fastq.gz ../data/raw/M-C-358_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-360/ -b 100  ../data/raw/M-C-360_R1_001.fastq.gz ../data/raw/M-C-360_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-363/ -b 100  ../data/raw/M-C-363_R1_001.fastq.gz ../data/raw/M-C-363_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-373/ -b 100  ../data/raw/M-C-373_R1_001.fastq.gz ../data/raw/M-C-373_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-482/ -b 100  ../data/raw/M-C-482_R1_001.fastq.gz ../data/raw/M-C-482_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-488/ -b 100  ../data/raw/M-C-488_R1_001.fastq.gz ../data/raw/M-C-488_R2_001.fastq.gz
+```
+
+```{bash}
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-193/ -b 100  ../data/raw/M-C-193_R1_001.fastq.gz ../data/raw/M-C-193_R2_001.fastq.gz
+```
+
+## Treatment Sample Quantification
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-18/ -b 100  ../data/raw/M-T-18_R1_001.fastq.gz ../data/raw/M-T-18_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-20/ -b 100  ../data/raw/M-T-20_R1_001.fastq.gz ../data/raw/M-T-20_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-22/ -b 100  ../data/raw/M-T-22_R1_001.fastq.gz ../data/raw/M-T-22_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-235/ -b 100  ../data/raw/M-T-235_R1_001.fastq.gz ../data/raw/M-T-235_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-245/ -b 100  ../data/raw/M-T-245_R1_001.fastq.gz ../data/raw/M-T-245_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-29/ -b 100  ../data/raw/M-T-29_R1_001.fastq.gz ../data/raw/M-T-29_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-31/ -b 100  ../data/raw/M-T-31_R1_001.fastq.gz ../data/raw/M-T-31_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-32/ -b 100  ../data/raw/M-T-32_R1_001.fastq.gz ../data/raw/M-T-32_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-399/ -b 100  ../data/raw/M-T-399_R1_001.fastq.gz ../data/raw/M-T-399_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-43/ -b 100  ../data/raw/M-T-43_R1_001.fastq.gz ../data/raw/M-T-43_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-44/ -b 100  ../data/raw/M-T-44_R1_001.fastq.gz ../data/raw/M-T-44_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-500/ -b 100  ../data/raw/M-T-500_R1_001.fastq.gz ../data/raw/M-T-500_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-7/ -b 100  ../data/raw/M-T-7_R1_001.fastq.gz ../data/raw/M-T-7_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-83/ -b 100  ../data/raw/M-T-83_R1_001.fastq.gz ../data/raw/M-T-83_R2_001.fastq.gz
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-8/ -b 100  ../data/raw/M-T-8_R1_001.fastq.gz ../data/raw/M-T-8_R2_001.fastq.gz
+```
+
+# Trinity Matrix with Kallisto Output
+
+```{bash}
+
+/home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \ 
+--est_method kallisto \ 
+--gene_trans_map 'none' \ 
+--out_prefix kallisto \ 
+--output_dir ../output/ \ 
+--name_sample_by_basedir \ 
+../output/kallisto/**/*.tsv
 
 
 ```
