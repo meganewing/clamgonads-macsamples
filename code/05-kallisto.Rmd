@@ -1,0 +1,19 @@
+---
+title: "kallisto"
+output: html_document
+date: "2023-11-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{bash}
+
+/home/shared/kallisto/kallisto
+```
+
+```{bash}
+
+
+```

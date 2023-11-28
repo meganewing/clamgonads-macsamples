@@ -6,3 +6,28 @@ format:
     toc: true
 ---
 
+### Retrieving data from Gannet
+
+-   waiting on file path link / info on how to access the reads
+
+making a directory specifically for the raw files
+
+```{bash}
+mkdir ../data/raw/
+```
+
+```{bash}
+
+# get raw data from gannet origin but only dowload ".fastq.gz" files within that online directory, and limit search to just that directory (no parent directories)
+wget -A "*.fastq.gz" -r -np -nd -P ../data/raw/ "https://gannet.fish.washington.edu/mewing0/Man_clam_raw/" 
+
+```
+
+### Checking file integrity via MD5sums
+
+```{bash}
+
+md5sum --quiet -c ".../data/raw/" 
+
+```
+

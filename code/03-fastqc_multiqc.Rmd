@@ -1,0 +1,50 @@
+---
+title: "fastqc and multiqc"
+output: html_document
+date: "2023-11-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### FastQC to evaluate the quality of our sequence data
+
+Self to do notes: - download the software (dowload the win/linux zip file for command line access) or find file path for Raven -
+
+```{bash}
+
+#making a directory for our fastqc output to be saved to, within our more general 'output' directory
+mkdir ../output/fastQC-output/
+
+```
+
+```{bash}
+
+/home/shared/FastQC-0.12.1/fastqc ../data/raw/*fastq.gz -o ../output/fastQC-output/
+```
+
+check output folder contents
+
+```{bash}
+
+ls ../output/fastQC-output/
+
+```
+
+# MultiQC
+
+move to fastqc directory
+
+```{bash}
+
+eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
+conda activate
+which multiqc 
+
+cd ../output/fastQC-output
+pwd
+
+multiqc .
+
+```

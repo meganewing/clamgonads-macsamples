@@ -1,0 +1,40 @@
+---
+title: "md5sumcheck on raw files"
+output: html_document
+date: "2023-11-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Checking file integrity via MD5sums
+
+```{bash}
+
+pwd
+```
+
+moving to the folder with the files we want to check (make sure both R console and terminal are set to the proper directory)
+
+```{bash}
+
+cd ../data/raw
+pwd 
+
+```
+
+retrieving md5sum check file from our online location
+
+```{bash}
+
+wget https://gannet.fish.washington.edu/mewing0/Man_clam_raw/check_md5s.sh -P ../data/raw/
+```
+
+```{bash}
+
+cd ../data/raw
+pwd
+! md5sum -c --quiet "check_md5s.sh"
+
+```
