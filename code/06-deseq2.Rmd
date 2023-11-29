@@ -13,20 +13,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r run once}
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-BiocManager::install(version = "3.12")
+BiocManager::install("biocLite")
 biocLite("DESeq2")
 library(DESeq2)
 ```
 
 ## DESeq2
 
-### load in count data 
+### load in count data
 
 ```{r}
 
 options(scipen = 999) #disables printing results in scientific notation
 
-data <- read.delim("../output/kallisto.isoform.counts.matrix") 
+data <- read_delim("../output/kallisto.isoform.counts.matrix") 
 
 rownames(data) <- data$X
 
@@ -71,7 +71,7 @@ tmp <- deseq2.res
 write.table(DEG,"analyses/0309-DEG.tab", row.names = T)
 ```
 
-## Visualization 
+## Visualization
 
 ### Volcano
 

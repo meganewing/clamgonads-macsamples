@@ -1,0 +1,13 @@
+{
+	"n_targets": 2,
+	"n_bootstraps": 100,
+	"n_processed": 34443939,
+	"n_pseudoaligned": 0,
+	"n_unique": 0,
+	"p_pseudoaligned": 0.0,
+	"p_unique": 0.0,
+	"kallisto_version": "0.46.1",
+	"index_version": 10,
+	"start_time": "Tue Nov 28 12:05:29 2023",
+	"call": "/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-216/ -b 100 ../data/raw/M-C-216_R1_001.fastq.gz ../data/raw/M-C-216_R2_001.fastq.gz"
+}
