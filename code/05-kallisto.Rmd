@@ -22,11 +22,14 @@ kallisto info and location on Raven
 curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_026571515.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA,SEQUENCE_REPORT&filename=GCF_026571515.1.zip" -H "Accept: application/zip" 
 ```
 
-moving the reference file to proper folder
+need to unzip in command line and follow prompts.
+
+once done, move reference file folder to data folder (saves it initially to current directory: code)
 
 ```{bash}
 
-mv GCF_026571515.1.zip ../data/
+mv ncbi_dataset/ ../data/
+
 
 ```
 
@@ -34,7 +37,7 @@ mv GCF_026571515.1.zip ../data/
 
 ```{bash}
 
-/home/shared/kallisto/kallisto index -i transcripts.idx ../data/GCF_026571515.1.zip
+/home/shared/kallisto/kallisto index -i transcripts.idx ../data/ncbi_dataset/data/GCF_026571515.1/GCF_026571515.1_ASM2657151v2_genomic.fna
 
 ```
 
