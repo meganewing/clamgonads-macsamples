@@ -30,22 +30,34 @@ options(scipen = 999) #disables printing results in scientific notation
 
 data <- read_delim("../output/kallisto.isoform.counts.matrix") 
 
-rownames(data) <- data$X
+## here we want to specify our row names from out first column of data. it can be a little funky, but saving this order should work:
 
+# create object for row names from the first column
+# used the $ index because brackets were giving trouble
+rownames <- data$...1
+head(rownames)
+
+# remove that first column now that it's values are stored
 data <- data[,-1]
+head(data)
 
 #ensures all data as integer
 data <- round(data, digits = 0)
-
 head(data)
+
+# assign the row names to the data using the object created 
+rownames(data) <- rownames
+head(data)
+
 ```
 
 ### build objects; specify which columns are in groups
 
 ```{r}
-deseq2.colData <- data.frame(condition=factor(c(rep("Control", 15), rep("Treatment", 15))), 
-                             type=factor(rep("paired-read", 30)))
+deseq2.colData <- data.frame(condition = factor(c(rep("Control", 15), rep("Treatment", 15))), type = factor(rep("paired-read", 30)))
+
 rownames(deseq2.colData) <- colnames(data)
+
 deseq2.dds <- DESeqDataSetFromMatrix(countData = data,
                                      colData = deseq2.colData, 
                                      design = ~ condition)
@@ -58,7 +70,7 @@ deseq2.dds <- DESeqDataSetFromMatrix(countData = data,
 
 deseq2.dds <- DESeq(deseq2.dds)
 deseq2.res <- results(deseq2.dds)
-deseq2.res <- deseq2.res[order(deseq2.res$pvalue), ]
+deseq2.res <- deseq2.res[order(rownames(deseq2.res)),]
 
 summary(deseq2.res)
 ```
@@ -96,7 +108,7 @@ abline(h=c(-1,1), col="blue")
 ```{r}
 #load libraries for heatmap
 library("RColorBrewer")
-library( "genefilter" )
+# library( "genefilter" )
 library("pheatmap")
 ```
 
@@ -109,37 +121,57 @@ topVarGenes <- head( order( rowVars (x = assay(rld), useNames = FALSE ), decreas
 ```
 
 ```{r}
-#make heatmap of top 25 differentially expressed genes
+# make heatmap of top 25 differentially expressed genes
+# get top 25 counts
 top25Counts<-assay(rld)[topVarGenes,]
+head(top25Counts)
 
-pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 12, fontsize_row = 5)
+# make the heatmap. Cluster_cols = FALSE neccessary to get the M-T and M-C columns next to eachother (defult leaves em randomized)
+pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 12, fontsize_row = 5, cluster_cols = FALSE)
 
-### ask how to sort the samples by M-C-* and M-T-*
 ```
 
 ### Sig. DEG Heatmap
 
+commenting out this section so I can knit and folks can see the outputs
+
 ```{r}
 # make a heatmap using only our significant DEGs
 
-#import data
-DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
+# #import data
+# DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
+# head(DEGCounts)
+# 
+# #select subset of just gene and sample columns
+# DEGHeatmap <- DEGCounts[-c(2:7)]
+# head(DEGHeatmap)
+# 
+# # establish that the first column is row names 
+# # rownames(DEGHeatmap) <- DEGHeatmap$gene
+# 
+# #get rid of the redundant row names column that will be created.
+# # DEGHeatmap <- DEGHeatmap[,-1]
+# 
+# 
+# ### stuck here
+# ### Error in seq.default(-m, m, length.out = n + 1) :'from' must be a finite number
+# 
+# #make heatmap
+# pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 3)
 
-#select subset of just gene and sample columns
-DEGHeatmap <- DEGCounts[-c(2:7)]
-
-#establish that the first column is row names 
-rownames(DEGHeatmap) <- DEGHeatmap$gene
-
-#get rid of the redundant row names column that will be created.
-DEGHeatmap <- DEGHeatmap[,-1]
 
 
-### stuck here
-### Error in seq.default(-m, m, length.out = n + 1) :'from' must be a finite number
+```
 
-#make heatmap
-pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 10,)
+Chunk above is giving me trouble. Here's what I want:
+
+1.  a data frame containing rows = genes, cols = samples, values = mean exp but ONLY for things where p \<= 0.05
+2.  a heatmap that then shows the genes that are *significantly deferentially* expressed
+
+```{r}
+
+
+
 
 
 ```
