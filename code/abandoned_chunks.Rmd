@@ -1,0 +1,76 @@
+---
+title: "The Code That Never Was"
+output: html_document
+date: "2023-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Code That Never Was
+
+This is code that did not make the "final cut" and would've been nice, but ultimately not neccessary to the analyses.
+
+## 06-deseq2
+
+### Making an extra Heatmap for sig DEGs
+
+I wanted to create a heatmap that showed sig. DEGs by sample, not neccessary, but was would've been cool. Scrapped it for the sake of time. The following code goes after the whole of the \`06-deseq2.Rmd\` script:
+
+\~\~\~\~
+
+commenting out this section so I can knit and folks can see the outputs
+
+```{r}
+# make a heatmap using only our significant DEGs
+
+# #import data
+# DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
+# head(DEGCounts)
+# 
+# #select subset of just gene and sample columns
+# DEGHeatmap <- DEGCounts[-c(2:7)]
+# head(DEGHeatmap)
+# 
+# # establish that the first column is row names 
+# # rownames(DEGHeatmap) <- DEGHeatmap$gene
+# 
+# #get rid of the redundant row names column that will be created.
+# # DEGHeatmap <- DEGHeatmap[,-1]
+# 
+# 
+# ### stuck here
+# ### Error in seq.default(-m, m, length.out = n + 1) :'from' must be a finite number
+# 
+# #make heatmap
+# pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 3)
+
+
+
+```
+
+Chunk above is giving me trouble. Here's what I want:
+
+1.  a data frame containing rows = genes, cols = samples, values = mean exp but ONLY for things where p \<= 0.05
+2.  a heatmap that then shows the genes that are *significantly deferentially* expressed
+
+```{r}
+
+# read in sig.DEGs
+DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
+head(DEGCounts)
+
+DEGCountNames <-rownames(DEGCounts)
+DEGCounts <- add_column(DEGCounts, DEGCountNames, .before = DEGCounts$baseMean )
+
+varGenes <- order( rowVars (x = assay(rld), useNames = FALSE ), decreasing=TRUE )
+varGenes <-assay(rld)[topVarGenes,]
+
+varNames <- rownames(varGenes)
+varGenes <- as.data.frame(varGenes) 
+varGenes <- add_column(varGenes, varNames, .before = varNames$`M-C-193`)
+
+merge(varGenes, DEGCounts, by.y = "DEGCountNames", by.x = "top25names")
+
+```

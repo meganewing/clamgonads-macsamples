@@ -79,6 +79,7 @@ summary(deseq2.res)
 
 ```{r}
 DEG <- deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ]
+dim(DEG)
 
 tmp <- deseq2.res
 
@@ -114,7 +115,7 @@ library("pheatmap")
 
 ```{r}
 #Regularized log transformation
-rld <- rlog( deseq2.dds )
+rld <- rlog( deseq2.dds, blind = FALSE )
 
 #Get 25 top varying genes
 topVarGenes <- head( order( rowVars (x = assay(rld), useNames = FALSE ), decreasing=TRUE ), 25)
@@ -131,47 +132,3 @@ pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fon
 
 ```
 
-### Sig. DEG Heatmap
-
-commenting out this section so I can knit and folks can see the outputs
-
-```{r}
-# make a heatmap using only our significant DEGs
-
-# #import data
-# DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
-# head(DEGCounts)
-# 
-# #select subset of just gene and sample columns
-# DEGHeatmap <- DEGCounts[-c(2:7)]
-# head(DEGHeatmap)
-# 
-# # establish that the first column is row names 
-# # rownames(DEGHeatmap) <- DEGHeatmap$gene
-# 
-# #get rid of the redundant row names column that will be created.
-# # DEGHeatmap <- DEGHeatmap[,-1]
-# 
-# 
-# ### stuck here
-# ### Error in seq.default(-m, m, length.out = n + 1) :'from' must be a finite number
-# 
-# #make heatmap
-# pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 3)
-
-
-
-```
-
-Chunk above is giving me trouble. Here's what I want:
-
-1.  a data frame containing rows = genes, cols = samples, values = mean exp but ONLY for things where p \<= 0.05
-2.  a heatmap that then shows the genes that are *significantly deferentially* expressed
-
-```{r}
-
-
-
-
-
-```

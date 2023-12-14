@@ -1,0 +1,30 @@
+---
+title: "08-join-annotations"
+output: html_document
+date: "2023-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{bash}
+# look at the two files we will be joining (DEG and raw matrix)
+head ../output/1213-DEG.tab
+head ../output/kallisto.isoform.counts.matrix
+```
+
+```{bash}
+# join and sort files 
+join <(sort ../output/1213-DEG.tab) <(sort ../output/kallisto.isoform.counts.matrix) > ../output/1213-DEG.tab
+```
+
+```{bash}
+#check output
+head ../output/1213-DEG.tab
+```
+
+```{bash}
+# join in blast results to get associated gene names
+join <(sort GCF_026571515.1.tab) <(sort ../output/1213-DEG.tab > 08-DEGandBlastTable.tab
+```
