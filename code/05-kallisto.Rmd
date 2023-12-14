@@ -22,7 +22,7 @@ kallisto info and location on Raven
 curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_026571515.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,RNA_FASTA,CDS_FASTA,PROT_FASTA,SEQUENCE_REPORT&filename=GCF_026571515.1.zip" -H "Accept: application/zip" 
 ```
 
-need to unzip in command line and follow prompts.
+**need to unzip in command line and follow prompts.**
 
 once done, move reference file folder to data folder (saves it initially to current directory: code)
 
@@ -37,7 +37,7 @@ mv ncbi_dataset/ ../data/
 
 ```{bash}
 
-/home/shared/kallisto/kallisto index -i transcripts.idx ../data/ncbi_dataset/data/GCF_026571515.1/GCF_026571515.1_ASM2657151v2_genomic.fna
+/home/shared/kallisto_linux-v0.50.1/kallisto index -t 20 -i transcripts.idx ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna 
 
 ```
 
@@ -61,159 +61,163 @@ mv ncbi_dataset/ ../data/
 
 ## Control Sample Quantification
 
+chunk run time: 9:16am start, 9:25am finish
+
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-216/ -b 100  ../data/raw/M-C-216_R1_001.fastq.gz ../data/raw/M-C-216_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-216/ -b 100  ../data/raw/M-C-216_R1_001.fastq.gz ../data/raw/M-C-216_R2_001.fastq.gz
 
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-218/ -b 100  ../data/raw/M-C-218_R1_001.fastq.gz ../data/raw/M-C-218_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-218/ -b 100  ../data/raw/M-C-218_R1_001.fastq.gz ../data/raw/M-C-218_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-226/ -b 100  ../data/raw/M-C-226_R1_001.fastq.gz ../data/raw/M-C-226_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-226/ -b 100  ../data/raw/M-C-226_R1_001.fastq.gz ../data/raw/M-C-226_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-306/ -b 100  ../data/raw/M-C-306_R1_001.fastq.gz ../data/raw/M-C-306_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-306/ -b 100  ../data/raw/M-C-306_R1_001.fastq.gz ../data/raw/M-C-306_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-329/ -b 100  ../data/raw/M-C-329_R1_001.fastq.gz ../data/raw/M-C-329_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-329/ -b 100  ../data/raw/M-C-329_R1_001.fastq.gz ../data/raw/M-C-329_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-334/ -b 100  ../data/raw/M-C-334_R1_001.fastq.gz ../data/raw/M-C-334_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-334/ -b 100  ../data/raw/M-C-334_R1_001.fastq.gz ../data/raw/M-C-334_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-337/ -b 100  ../data/raw/M-C-337_R1_001.fastq.gz ../data/raw/M-C-337_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-337/ -b 100  ../data/raw/M-C-337_R1_001.fastq.gz ../data/raw/M-C-337_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-339/ -b 100  ../data/raw/M-C-339_R1_001.fastq.gz ../data/raw/M-C-339_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-339/ -b 100  ../data/raw/M-C-339_R1_001.fastq.gz ../data/raw/M-C-339_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-358/ -b 100  ../data/raw/M-C-358_R1_001.fastq.gz ../data/raw/M-C-358_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-358/ -b 100  ../data/raw/M-C-358_R1_001.fastq.gz ../data/raw/M-C-358_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-360/ -b 100  ../data/raw/M-C-360_R1_001.fastq.gz ../data/raw/M-C-360_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-360/ -b 100  ../data/raw/M-C-360_R1_001.fastq.gz ../data/raw/M-C-360_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-363/ -b 100  ../data/raw/M-C-363_R1_001.fastq.gz ../data/raw/M-C-363_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-363/ -b 100  ../data/raw/M-C-363_R1_001.fastq.gz ../data/raw/M-C-363_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-373/ -b 100  ../data/raw/M-C-373_R1_001.fastq.gz ../data/raw/M-C-373_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-373/ -b 100  ../data/raw/M-C-373_R1_001.fastq.gz ../data/raw/M-C-373_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-482/ -b 100  ../data/raw/M-C-482_R1_001.fastq.gz ../data/raw/M-C-482_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-482/ -b 100  ../data/raw/M-C-482_R1_001.fastq.gz ../data/raw/M-C-482_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-488/ -b 100  ../data/raw/M-C-488_R1_001.fastq.gz ../data/raw/M-C-488_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-488/ -b 100  ../data/raw/M-C-488_R1_001.fastq.gz ../data/raw/M-C-488_R2_001.fastq.gz
 ```
 
 ```{bash}
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-C-193/ -b 100  ../data/raw/M-C-193_R1_001.fastq.gz ../data/raw/M-C-193_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-C-193/ -b 100  ../data/raw/M-C-193_R1_001.fastq.gz ../data/raw/M-C-193_R2_001.fastq.gz
 ```
 
 ## Treatment Sample Quantification
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-18/ -b 100  ../data/raw/M-T-18_R1_001.fastq.gz ../data/raw/M-T-18_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-18/ -b 100  ../data/raw/M-T-18_R1_001.fastq.gz ../data/raw/M-T-18_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-20/ -b 100  ../data/raw/M-T-20_R1_001.fastq.gz ../data/raw/M-T-20_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-20/ -b 100  ../data/raw/M-T-20_R1_001.fastq.gz ../data/raw/M-T-20_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-22/ -b 100  ../data/raw/M-T-22_R1_001.fastq.gz ../data/raw/M-T-22_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-22/ -b 100  ../data/raw/M-T-22_R1_001.fastq.gz ../data/raw/M-T-22_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-235/ -b 100  ../data/raw/M-T-235_R1_001.fastq.gz ../data/raw/M-T-235_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-235/ -b 100  ../data/raw/M-T-235_R1_001.fastq.gz ../data/raw/M-T-235_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-245/ -b 100  ../data/raw/M-T-245_R1_001.fastq.gz ../data/raw/M-T-245_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-245/ -b 100  ../data/raw/M-T-245_R1_001.fastq.gz ../data/raw/M-T-245_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-29/ -b 100  ../data/raw/M-T-29_R1_001.fastq.gz ../data/raw/M-T-29_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-29/ -b 100  ../data/raw/M-T-29_R1_001.fastq.gz ../data/raw/M-T-29_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-31/ -b 100  ../data/raw/M-T-31_R1_001.fastq.gz ../data/raw/M-T-31_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-31/ -b 100  ../data/raw/M-T-31_R1_001.fastq.gz ../data/raw/M-T-31_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-32/ -b 100  ../data/raw/M-T-32_R1_001.fastq.gz ../data/raw/M-T-32_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-32/ -b 100  ../data/raw/M-T-32_R1_001.fastq.gz ../data/raw/M-T-32_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-399/ -b 100  ../data/raw/M-T-399_R1_001.fastq.gz ../data/raw/M-T-399_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-399/ -b 100  ../data/raw/M-T-399_R1_001.fastq.gz ../data/raw/M-T-399_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-43/ -b 100  ../data/raw/M-T-43_R1_001.fastq.gz ../data/raw/M-T-43_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-43/ -b 100  ../data/raw/M-T-43_R1_001.fastq.gz ../data/raw/M-T-43_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-44/ -b 100  ../data/raw/M-T-44_R1_001.fastq.gz ../data/raw/M-T-44_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-44/ -b 100  ../data/raw/M-T-44_R1_001.fastq.gz ../data/raw/M-T-44_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-500/ -b 100  ../data/raw/M-T-500_R1_001.fastq.gz ../data/raw/M-T-500_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-500/ -b 100  ../data/raw/M-T-500_R1_001.fastq.gz ../data/raw/M-T-500_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-7/ -b 100  ../data/raw/M-T-7_R1_001.fastq.gz ../data/raw/M-T-7_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-7/ -b 100  ../data/raw/M-T-7_R1_001.fastq.gz ../data/raw/M-T-7_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-83/ -b 100  ../data/raw/M-T-83_R1_001.fastq.gz ../data/raw/M-T-83_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-83/ -b 100  ../data/raw/M-T-83_R1_001.fastq.gz ../data/raw/M-T-83_R2_001.fastq.gz
 ```
 
 ```{bash}
 
-/home/shared/kallisto/kallisto quant -i transcripts.idx -o ../output/kallisto/M-T-8/ -b 100  ../data/raw/M-T-8_R1_001.fastq.gz ../data/raw/M-T-8_R2_001.fastq.gz
+/home/shared/kallisto_linux-v0.50.1/kallisto quant -t 10 -i transcripts.idx -o ../output/kallisto/M-T-8/ -b 100  ../data/raw/M-T-8_R1_001.fastq.gz ../data/raw/M-T-8_R2_001.fastq.gz
 ```
 
 # Trinity Matrix with Kallisto Output
+
+run time: \~1 min
 
 ```{bash}
 

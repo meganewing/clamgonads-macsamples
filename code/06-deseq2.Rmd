@@ -11,11 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ### load packages
 
 ```{r run once}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("biocLite")
-biocLite("DESeq2")
+### only run if packages not already installed
+
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#  install.packages("BiocManager")
+# BiocManager::install("biocLite")
 library(DESeq2)
+library(tidyverse)
 ```
 
 ## DESeq2
@@ -41,8 +43,8 @@ head(data)
 ### build objects; specify which columns are in groups
 
 ```{r}
-deseq2.colData <- data.frame(condition=factor(c(rep("Control", 2), rep("Treatment", 2))), 
-                             type=factor(rep("single-read", 4)))
+deseq2.colData <- data.frame(condition=factor(c(rep("Control", 15), rep("Treatment", 15))), 
+                             type=factor(rep("paired-read", 30)))
 rownames(deseq2.colData) <- colnames(data)
 deseq2.dds <- DESeqDataSetFromMatrix(countData = data,
                                      colData = deseq2.colData, 
@@ -56,9 +58,9 @@ deseq2.dds <- DESeqDataSetFromMatrix(countData = data,
 
 deseq2.dds <- DESeq(deseq2.dds)
 deseq2.res <- results(deseq2.dds)
-#deseq2.res <- deseq2.res[order(rownames(deseq2.res)) , ]
+deseq2.res <- deseq2.res[order(deseq2.res$pvalue), ]
 
-head(deseq2.res)
+summary(deseq2.res)
 ```
 
 ### Count number of hits with adjusted p-value less then 0.05
@@ -68,7 +70,7 @@ DEG <- deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ]
 
 tmp <- deseq2.res
 
-write.table(DEG,"analyses/0309-DEG.tab", row.names = T)
+write.table(DEG,"../output/1213-DEG.tab", row.names = T)
 ```
 
 ## Visualization
@@ -77,7 +79,7 @@ write.table(DEG,"analyses/0309-DEG.tab", row.names = T)
 
 ```{r volcano}
 plot(tmp$baseMean, tmp$log2FoldChange, pch=20, cex=0.45, ylim=c(-10, 10), log="x", col="darkgray",
-     main="DEG Estradiol versus Control  (pval <= 0.05)",
+     main="Treatmetn versus Control  (pval <= 0.05)",
      xlab="mean of normalized counts",
      ylab="Log2 Fold Change")
 
@@ -103,7 +105,7 @@ library("pheatmap")
 rld <- rlog( deseq2.dds )
 
 #Get 25 top varying genes
-topVarGenes <- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 25)
+topVarGenes <- head( order( rowVars (x = assay(rld), useNames = FALSE ), decreasing=TRUE ), 25)
 ```
 
 ```{r}
@@ -111,6 +113,8 @@ topVarGenes <- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 25)
 top25Counts<-assay(rld)[topVarGenes,]
 
 pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 12, fontsize_row = 5)
+
+### ask how to sort the samples by M-C-* and M-T-*
 ```
 
 ### Sig. DEG Heatmap
@@ -119,7 +123,7 @@ pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fon
 # make a heatmap using only our significant DEGs
 
 #import data
-DEGCounts <- read.table("analyses/0309-DEGCounts.tab", header=TRUE, quote="\"")
+DEGCounts <- read.table("../output/1213-DEG.tab", header=TRUE, quote="\"")
 
 #select subset of just gene and sample columns
 DEGHeatmap <- DEGCounts[-c(2:7)]
@@ -130,6 +134,12 @@ rownames(DEGHeatmap) <- DEGHeatmap$gene
 #get rid of the redundant row names column that will be created.
 DEGHeatmap <- DEGHeatmap[,-1]
 
+
+### stuck here
+### Error in seq.default(-m, m, length.out = n + 1) :'from' must be a finite number
+
 #make heatmap
-pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 10)
+pheatmap(DEGHeatmap, scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 10, fontsize_row = 10,)
+
+
 ```
