@@ -111,17 +111,4 @@ echo "Number of lines in output"
 wc -l ../output/GCF_026571515.1.tab
 ```
 
-## 5. Joining Blast Table with Annotations
-
-### Prepping Blast table for easy join
-
-```{bash}
-
-tr '|' '\t' < ../output/GCF_026571515.1.tab \
-> ../output/GCF_026571515.1.tab
-
-#peeking to make sure it looks as expected
-head -1 ../output/GCF_026571515.1.tab
-
-
-```
+## 

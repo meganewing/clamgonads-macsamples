@@ -8,23 +8,61 @@ date: "2023-12-14"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{bash}
-# look at the two files we will be joining (DEG and raw matrix)
-head ../output/1213-DEG.tab
-head ../output/kallisto.isoform.counts.matrix
+```{r}
+library(tidyverse)
+
 ```
 
-```{bash}
-# join and sort files 
-join <(sort ../output/1213-DEG.tab) <(sort ../output/kallisto.isoform.counts.matrix) > ../output/1213-DEG.tab
+## Joining the blast results with our DEGs
+
+```{r}
+
+#read in DEG results
+DEG <- read.csv('../output/1213-DEG.tab', sep = " ")
+head(DEG)
+
 ```
 
-```{bash}
-#check output
-head ../output/1213-DEG.tab
+```{r}
+# make column with gene names
+
+genenames <- rownames(DEG)
+
+DEG$genes <- genenames
+
+head(DEG)
+
 ```
 
-```{bash}
-# join in blast results to get associated gene names
-join <(sort GCF_026571515.1.tab) <(sort ../output/1213-DEG.tab > 08-DEGandBlastTable.tab
+```{r}
+# read in BLAST results
+blast <- read.delim("../output/GCF_026571515.1.tab", header=FALSE)
+head(blast)
+```
+
+```{r}
+# make sure the column names are the same for the merge
+
+colnames(blast)[1] <- "genes"
+head(blast)
+```
+
+```{r}
+# join by gene name
+
+DEG_Blast <- merge(x = DEG, y = blast, by = "genes")
+head(DEG_Blast)
+
+write_delim(DEG_Blast, "../output/DEG_Blast_Full_Results.tab")
+
+```
+
+```{r}
+# make a short file of just the DEG names
+
+DEG_annot <- data.frame( geneID = DEG_Blast$genes, geneName = DEG_Blast$V2, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj  )
+
+head(DEG_annot)
+
+write_delim(DEG_annot, "../output/DEG_annotations.tab")
 ```
