@@ -8,10 +8,6 @@ date: "2023-11-28"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Blast Tutorial Using Sample Geoduck File
-
-Following the blast tutorial outlined in [TUSK](https://robertslab.github.io/tusk/modules/04-blast.html) to blast and annotate geoduck genes in the file provided in [this github issue](https://github.com/RobertsLab/resources/issues/1710). Important to note that the geoduck file is a *protein* file, so need to run *blastp* instead of *blastx* as listed in the tutorial.
-
 Before starting, make a directory/repo to do all this in that contains the following folders:
 
 -   Code (this is where this/the code file should be)
