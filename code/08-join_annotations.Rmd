@@ -9,11 +9,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+# do once
+# install.packages("R.utils")
 library(tidyverse)
+library(R.utils)
 
 ```
 
-## Joining the blast results with our DEGs
+## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
 
 ```{r}
 
@@ -42,6 +45,7 @@ head(blast)
 
 ```{r}
 # make sure the column names are the same for the merge
+# not needed if you specify "by.x" and "by.y" in the merge function tho 
 
 colnames(blast)[1] <- "genes"
 head(blast)
@@ -58,11 +62,54 @@ write_delim(DEG_Blast, "../output/DEG_Blast_Full_Results.tab")
 ```
 
 ```{r}
-# make a short file of just the DEG names
+# make a short file of just the DEG names and other desired data
 
 DEG_annot <- data.frame( geneID = DEG_Blast$genes, geneName = DEG_Blast$V2, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj  )
 
 head(DEG_annot)
 
-write_delim(DEG_annot, "../output/DEG_annotations.tab")
+
+```
+
+```{r}
+# retrieve gene names for uniprot id lookup
+
+# this is to get just the numbers from the geneName column for uniprot
+# so sp|S8FGV1|LAC... becomes just S8FGV1
+uniprot_id <- substr(DEG_annot$geneName, 4, 9)
+
+head(uniprot_id)
+
+# add this list of uniprot id names to the dataframe
+DEG_annot$uniprot_id <- uniprot_id
+head(DEG_annot)
+
+# write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
+write.table(uniprot_id, "../output/uniprot_id.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+```
+
+```{r}
+
+# retrieved our unirpot id GO file from the web interface https://www.uniprot.org/
+# importing and unzipping file here
+
+gunzip("../data/idmapping_2024_01_04.tsv.gz")
+
+GO_id <- read.csv("../data/idmapping_2024_01_04.tsv", sep = '\t', header = TRUE, row.names=NULL)
+head(GO_id)
+```
+
+```{r}
+# join GO id info to our DEG_annot dataframe from earlier by the uniprot ids
+
+clam_GO_annotations <- merge(DEG_annot, GO_id, by.x = "uniprot_id", by.y = "Entry")
+head(clam_GO_annotations)
+
+```
+
+```{r}
+# siic it looks all good so let's write to file
+
+write_delim(clam_GO_annotations, "../output/clam_GO_annotations.tab")
 ```
