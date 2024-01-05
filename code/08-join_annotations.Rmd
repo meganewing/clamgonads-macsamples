@@ -111,5 +111,5 @@ head(clam_GO_annotations)
 ```{r}
 # siic it looks all good so let's write to file
 
-write_delim(clam_GO_annotations, "../output/clam_GO_annotations.tab")
+write.csv(clam_GO_annotations, "../output/clam_GO_annotations.csv")
 ```
