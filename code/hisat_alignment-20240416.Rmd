@@ -1,0 +1,91 @@
+---
+title: "full alignment (hisat)"
+author: "Megan Ewing"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### retrieving reference genome
+
+```{bash}
+
+curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_026571515.1/download?include_annotation_type=GENOME_FASTA&include_annotation_type=GENOME_GFF&include_annotation_type=RNA_FASTA&include_annotation_type=CDS_FASTA&include_annotation_type=PROT_FASTA&include_annotation_type=SEQUENCE_REPORT&hydrated=FULLY_HYDRATED" -H "Accept: application/zip" 
+
+```
+
+**need to unzip in command line and follow prompts.**
+
+`(unzip GCF_026571515.1.zip` is the command line code after *temporarily* changing to the code directory)
+
+once done, move reference file folder to data folder (saves it initially to current directory: code)
+
+note that because I've built an NCBI dataset before for kallisto, and to avoid overwriting that one, I am using the UI commands to rename the `ncbi_dataset` folder that was created when unzipping to `ncbi_dataset_202404`
+
+```{bash}
+
+mv ncbi_dataset_202404/ ../data/
+
+
+```
+
+------------------------------------------------------------------------
+
+skipping for now \^\^
+
+------------------------------------------------------------------------
+
+uploaded the gtf file from local download
+
+```{bash}
+/home/shared/hisat2-2.2.1/hisat2_extract_exons.py \
+../data/genomic.gtf \
+> ../output/hisat/m_exon.tab
+```
+
+checking output
+
+```{bash}
+head ../output/hisat/m_exon.tab
+
+```
+
+```{bash}
+# This script will extract splice sites from the gtf file
+
+/home/shared/hisat2-2.2.1/hisat2_extract_splice_sites.py ../data/genomic.gtf > ../output/hisat/m_splice_sites.tab
+```
+
+```{bash}
+
+head ../output/hisat/m_splice_sites.tab
+```
+
+```{bash}
+
+# hisat2-build is a program that builds a hisat2 index for the reference genome
+# ../data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna is the reference genome
+# GCF_013753865.1_Amil_v2.1 is the name of the index
+# --exon ../output/04-Apulcra-hisat/m_exon.tab is the exon file
+# --ss ../output/04-Apulcra-hisat/m_splice_sites.tab is the splice site file
+# -p 40 is the number of threads
+# ../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf is the gtf file
+# 2> ../output/04-Apulcra-hisat/hisat2-build_stats.txt is the output file
+
+/home/shared/hisat2-2.2.1/hisat2-build \
+../data/ncbi_dataset_202404/data/GCF_026571515.1/GCF_026571515.1_ASM2657151v2_genomic.fna \
+../output/hisat/GCF_026571515.1_index \
+--exon ../output/hisat/m_exon.tab \
+--ss ../output/hisat/m_splice_sites.tab \
+-p 40 \
+../data/genomic.gtf \
+2> ../output/hisat/hisat2-build_stats.txt
+```
+
+```{bash}
+
+head ../output/hisat/hisat2-build_stats.txt
+```
