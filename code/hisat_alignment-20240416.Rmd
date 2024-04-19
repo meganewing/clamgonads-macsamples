@@ -103,134 +103,24 @@ head ../output/hisat/hisat2-build_stats.txt
 
 ```{bash}
 
-# Path to the directory containing your read pairs
 input_directory="../data/raw"
 
-# Path to the HISAT executable
-hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
-
-# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
-reference_genome_index="../output/hisat/GCF_026571515.1_index"
-
-# Number of threads to use
-threads="48"
-
-# Output directory
-output_directory="../output/hisat/M-C-216.sam"
-
-# Change directory to the input directory
-cd "$input_directory"
-
 # Iterate over each pair of files in the input directory
-for read1 in *R1.fastq.gz; do
-    read2="${read1/R1/R2}"  # Assuming read2 files have "R2" in their names
-    base_name="${read1%_R1.fastq.gz}"  # Extract base name without suffix
-
-    # Generate output file names based on input file names
-    output_sam="$output_directory/${base_name}.sam"
-    stats_file="$output_directory/${base_name}_hisat2_stats.txt"
-
-    # Run HISAT alignment for the current pair of reads
-    "$hisat_executable" \
-    -x "$reference_genome_index" \
-    -p "$threads" \
-    -1 "$read1" \
-    -2 "$read2" \
-    -S "$output_sam" \
-    2>&1 | tee "$stats_file"
-done
-
-```
-
-```{bash}
-#!/bin/bash
-cd ../code/
-
-# Path to the directory containing your read pairs
-input_directory="../data/raw"
-
-# Path to the HISAT executable
-hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
-
-# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
-reference_genome_index="../output/hisat/GCF_026571515.1_index"
-
-# Number of threads to use
-threads="48"
-
-# Output directory
-output_directory="../output/hisat"
-
-
-# Iterate over each pair of files in the input directory
-for read1 in *R1_001.fastq.gz; do
-    read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
-    base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
-
-    # Generate output file names based on input file names
-    output_sam="$output_directory/${base_name}.sam"
-    stats_file="$output_directory/${base_name}_hisat2_stats.txt"
-
-    # Run HISAT alignment for the current pair of reads
-    "$hisat_executable" \
-    -x "$reference_genome_index" \
-    -p "$threads" \
-    -1 "$input_directory/$read1" \
-    -2 "$input_directory/$read2" \
-    -S "$output_sam" \
-    2>&1 | tee "$stats_file"
-done
-
-
-```
-
-```{bash}
-cd ../code/
-
-input_directory="../data/raw"
-
-# Path to the HISAT executable
-hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
-
-# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
-reference_genome_index="../output/hisat/GCF_026571515.1_index"
-
-# Number of threads to use
-threads="48"
-
-# Output directory
-output_directory="../output/hisat"
-
-# Verify if input directory exists
-if [ ! -d "$input_directory" ]; then
-    echo "Error: Input directory does not exist: $input_directory"
-    exit 1
-fi
-
-# Verify if output directory exists
-if [ ! -d "$output_directory" ]; then
-    echo "Error: Output directory does not exist: $output_directory"
-    exit 1
-fi
-
-cd "$input_directory" || exit 
-
-# Iterate over each pair of files in the input directory
-for read1 in *R1_001.fastq.gz; do
+for read1 in "${input_directory}/*R1_001.fastq.gz"; do
     if [ -f "$read1" ]; then
         read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
         base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
 
         # Generate output file names based on input file names
-        output_sam="$output_directory/${base_name}.sam"
-        stats_file="$output_directory/${base_name}_hisat2_stats.txt"
+        output_sam= ..output/hisat/${base_name}.sam
+        stats_file= ..output/hisat/${base_name}_hisat2_stats.txt
 
         # Run HISAT alignment for the current pair of reads
-        "$hisat_executable" \
-        -x "$reference_genome_index" \
-        -p "$threads" \
+        /home/shared/hisat2-2.2.1/hisat2 \
+        -x ../output/hisat/GCF_026571515.1_index \
+        -p 48 \
         -1 "$input_directory/$read1" \
-        -2 "$input_directory/$read2" \
+        -2 "$input_directory/$read1" \
         -S "$output_sam" \
         2>&1 | tee "$stats_file"
     else
