@@ -1,0 +1,241 @@
+---
+title: "full alignment (hisat)"
+author: "Megan Ewing"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### retrieving reference genome
+
+```{bash}
+
+curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCF_026571515.1/download?include_annotation_type=GENOME_FASTA&include_annotation_type=GENOME_GFF&include_annotation_type=RNA_FASTA&include_annotation_type=CDS_FASTA&include_annotation_type=PROT_FASTA&include_annotation_type=SEQUENCE_REPORT&hydrated=FULLY_HYDRATED" -H "Accept: application/zip" 
+
+```
+
+**need to unzip in command line and follow prompts.**
+
+`(unzip GCF_026571515.1.zip` is the command line code after *temporarily* changing to the code directory)
+
+once done, move reference file folder to data folder (saves it initially to current directory: code)
+
+note that because I've built an NCBI dataset before for kallisto, and to avoid overwriting that one, I am using the UI commands to rename the `ncbi_dataset` folder that was created when unzipping to `ncbi_dataset_202404`
+
+```{bash}
+
+mv ncbi_dataset_202404/ ../data/
+
+
+```
+
+------------------------------------------------------------------------
+
+skipping for now \^\^
+
+------------------------------------------------------------------------
+
+uploaded the gtf file from local download
+
+```{bash}
+/home/shared/hisat2-2.2.1/hisat2_extract_exons.py \
+../data/genomic.gtf \
+> ../output/hisat/m_exon.tab
+```
+
+checking output
+
+```{bash}
+head ../output/hisat/m_exon.tab
+
+```
+
+```{bash}
+# This script will extract splice sites from the gtf file
+
+/home/shared/hisat2-2.2.1/hisat2_extract_splice_sites.py ../data/genomic.gtf > ../output/hisat/m_splice_sites.tab
+```
+
+```{bash}
+
+head ../output/hisat/m_splice_sites.tab
+```
+
+```{bash}
+
+# hisat2-build is a program that builds a hisat2 index for the reference genome
+# ../data/Amil/ncbi_dataset/data/GCF_013753865.1/GCF_013753865.1_Amil_v2.1_genomic.fna is the reference genome
+# GCF_013753865.1_Amil_v2.1 is the name of the index
+# --exon ../output/04-Apulcra-hisat/m_exon.tab is the exon file
+# --ss ../output/04-Apulcra-hisat/m_splice_sites.tab is the splice site file
+# -p 40 is the number of threads
+# ../data/Amil/ncbi_dataset/data/GCF_013753865.1/genomic.gtf is the gtf file
+# 2> ../output/04-Apulcra-hisat/hisat2-build_stats.txt is the output file
+
+/home/shared/hisat2-2.2.1/hisat2-build \
+../data/ncbi_dataset_202404/data/GCF_026571515.1/GCF_026571515.1_ASM2657151v2_genomic.fna \
+../output/hisat/GCF_026571515.1_index \
+--exon ../output/hisat/m_exon.tab \
+--ss ../output/hisat/m_splice_sites.tab \
+-p 40 \
+../data/genomic.gtf \
+2> ../output/hisat/hisat2-build_stats.txt
+```
+
+```{bash}
+
+head ../output/hisat/hisat2-build_stats.txt
+```
+
+```{bash}
+# run hisat2 to align reads to the reference genome
+/home/shared/hisat2-2.2.1/hisat2 \
+-x ../output/hisat/GCF_026571515.1_index \
+-p 48 \
+-1 ../data/raw/M-C-216_R1_001.fastq.gz \
+-2 ../data/raw/M-C-216_R2_001.fastq.gz \
+-S ../output/hisat/M-C-216.sam \
+2>&1 | tee ../output/hisat/hisat2_stats.txt
+```
+
+```{bash}
+
+# Path to the directory containing your read pairs
+input_directory="../data/raw"
+
+# Path to the HISAT executable
+hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
+
+# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
+reference_genome_index="../output/hisat/GCF_026571515.1_index"
+
+# Number of threads to use
+threads="48"
+
+# Output directory
+output_directory="../output/hisat/M-C-216.sam"
+
+# Change directory to the input directory
+cd "$input_directory"
+
+# Iterate over each pair of files in the input directory
+for read1 in *R1.fastq.gz; do
+    read2="${read1/R1/R2}"  # Assuming read2 files have "R2" in their names
+    base_name="${read1%_R1.fastq.gz}"  # Extract base name without suffix
+
+    # Generate output file names based on input file names
+    output_sam="$output_directory/${base_name}.sam"
+    stats_file="$output_directory/${base_name}_hisat2_stats.txt"
+
+    # Run HISAT alignment for the current pair of reads
+    "$hisat_executable" \
+    -x "$reference_genome_index" \
+    -p "$threads" \
+    -1 "$read1" \
+    -2 "$read2" \
+    -S "$output_sam" \
+    2>&1 | tee "$stats_file"
+done
+
+```
+
+```{bash}
+#!/bin/bash
+cd ../code/
+
+# Path to the directory containing your read pairs
+input_directory="../data/raw"
+
+# Path to the HISAT executable
+hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
+
+# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
+reference_genome_index="../output/hisat/GCF_026571515.1_index"
+
+# Number of threads to use
+threads="48"
+
+# Output directory
+output_directory="../output/hisat"
+
+
+# Iterate over each pair of files in the input directory
+for read1 in *R1_001.fastq.gz; do
+    read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
+    base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
+
+    # Generate output file names based on input file names
+    output_sam="$output_directory/${base_name}.sam"
+    stats_file="$output_directory/${base_name}_hisat2_stats.txt"
+
+    # Run HISAT alignment for the current pair of reads
+    "$hisat_executable" \
+    -x "$reference_genome_index" \
+    -p "$threads" \
+    -1 "$input_directory/$read1" \
+    -2 "$input_directory/$read2" \
+    -S "$output_sam" \
+    2>&1 | tee "$stats_file"
+done
+
+
+```
+
+```{bash}
+cd ../code/
+
+input_directory="../data/raw"
+
+# Path to the HISAT executable
+hisat_executable="/home/shared/hisat2-2.2.1/hisat2"
+
+# Path to the reference genome index (replace GCF_026571515.1_index with the appropriate index prefix)
+reference_genome_index="../output/hisat/GCF_026571515.1_index"
+
+# Number of threads to use
+threads="48"
+
+# Output directory
+output_directory="../output/hisat"
+
+# Verify if input directory exists
+if [ ! -d "$input_directory" ]; then
+    echo "Error: Input directory does not exist: $input_directory"
+    exit 1
+fi
+
+# Verify if output directory exists
+if [ ! -d "$output_directory" ]; then
+    echo "Error: Output directory does not exist: $output_directory"
+    exit 1
+fi
+
+cd "$input_directory" || exit 
+
+# Iterate over each pair of files in the input directory
+for read1 in *R1_001.fastq.gz; do
+    if [ -f "$read1" ]; then
+        read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
+        base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
+
+        # Generate output file names based on input file names
+        output_sam="$output_directory/${base_name}.sam"
+        stats_file="$output_directory/${base_name}_hisat2_stats.txt"
+
+        # Run HISAT alignment for the current pair of reads
+        "$hisat_executable" \
+        -x "$reference_genome_index" \
+        -p "$threads" \
+        -1 "$input_directory/$read1" \
+        -2 "$input_directory/$read2" \
+        -S "$output_sam" \
+        2>&1 | tee "$stats_file"
+    else
+        echo "Warning: Read file '$read1' does not exist"
+    fi
+done
+
+```
