@@ -106,7 +106,7 @@ head ../output/hisat/hisat2-build_stats.txt
 input_directory="../data/raw"
 
 # Iterate over each pair of files in the input directory
-for read1 in "${input_directory}/*R1_001.fastq.gz"; do
+for read1 in "${input_directory}"/*R1_001.fastq.gz; do
     if [ -f "$read1" ]; then
         read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
         base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
@@ -129,3 +129,18 @@ for read1 in "${input_directory}/*R1_001.fastq.gz"; do
 done
 
 ```
+
+```{bash}
+find ../data/raw/*gz \
+| xargs basename -s _R1_001.fastq.gz | xargs -I{} \
+/home/shared/hisat2-2.2.1/hisat2 \
+-x ../output/hisat/GCF_026571515.1_index \
+-p 20 \
+-1 ../data/raw/{}_R1_001.fastq.gz \
+-2 ../data/raw/{}_R2_001.fastq.gz \
+-S ../output/hisat/hisat_out/{}.sam
+2>&1 | tee ../output/hisat/hisat_out/{}hisat2_stats.txt
+
+```
+3:48
+
