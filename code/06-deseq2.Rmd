@@ -132,3 +132,35 @@ pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fon
 
 ```
 
+```{r}
+# log2_changes <- deseq2.res[, "log2FoldChange"]
+
+# Filter for significant genes (adjusted p-value < 0.05)
+significant_results <- subset(deseq2.res, padj < 0.05)
+
+# Sort results by absolute log2 fold change
+significant_results <- significant_results[order(abs(significant_results$log2FoldChange), decreasing = TRUE), ]
+
+# Get top 25 significant genes
+top_25_genes <- head(significant_results, 25)
+
+# Extract log2 fold change values for top 25 genes
+top_25_genes_ids <- rownames(top_25_genes)
+top_25_genes_log2fc <- top_25_genes$log2FoldChange
+
+# Create a matrix containing log2 fold change values of top 25 genes
+top_25_genes_matrix <- count_matrix[top_25_genes_ids, ]
+
+# Plot heatmap for log2 fold change of top 25 genes
+pheatmap(top_25_genes_matrix, 
+         cluster_rows = TRUE, 
+         cluster_cols = FALSE,
+         main = "Heatmap of Log2 Fold Change for Top 25 DEGs",
+         #color = colorRampPalette(c("blue", "yellow", "red"))(100),  # Choose a color palette
+         breaks = seq(-4, 4, length.out = 101),  # Adjust the breaks for better color resolution
+         fontsize = 8)  # Adjust fontsize as needed
+
+
+
+
+```
