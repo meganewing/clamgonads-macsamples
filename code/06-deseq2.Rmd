@@ -30,6 +30,9 @@ options(scipen = 999) #disables printing results in scientific notation
 
 data <- read_delim("../output/kallisto.isoform.counts.matrix") 
 
+write.table(data, "../output/kallisto.matrix.tab", quote = FALSE, row.names = TRUE, sep = "\t")
+
+
 ## here we want to specify our row names from out first column of data. it can be a little funky, but saving this order should work:
 
 # create object for row names from the first column
