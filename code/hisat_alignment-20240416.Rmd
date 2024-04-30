@@ -103,30 +103,30 @@ head ../output/hisat/hisat2-build_stats.txt
 
 ```{bash}
 
-input_directory="../data/raw"
+<!-- input_directory="../data/raw" -->
 
-# Iterate over each pair of files in the input directory
-for read1 in "${input_directory}"/*R1_001.fastq.gz; do
-    if [ -f "$read1" ]; then
-        read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1
-        base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix
+<!-- # Iterate over each pair of files in the input directory -->
+<!-- for read1 in "${input_directory}"/*R1_001.fastq.gz; do -->
+<!--     if [ -f "$read1" ]; then -->
+<!--         read2="${read1/_R1_001.fastq.gz/_R2_001.fastq.gz}"  # Generate read2 filename based on read1 -->
+<!--         base_name="${read1%_R1_001.fastq.gz}"  # Extract base name without suffix -->
 
-        # Generate output file names based on input file names
-        output_sam= ..output/hisat/${base_name}.sam
-        stats_file= ..output/hisat/${base_name}_hisat2_stats.txt
+<!--         # Generate output file names based on input file names -->
+<!--         output_sam= ..output/hisat/${base_name}.sam -->
+<!--         stats_file= ..output/hisat/${base_name}_hisat2_stats.txt -->
 
-        # Run HISAT alignment for the current pair of reads
-        /home/shared/hisat2-2.2.1/hisat2 \
-        -x ../output/hisat/GCF_026571515.1_index \
-        -p 48 \
-        -1 "$input_directory/$read1" \
-        -2 "$input_directory/$read1" \
-        -S "$output_sam" \
-        2>&1 | tee "$stats_file"
-    else
-        echo "Warning: Read file '$read1' does not exist"
-    fi
-done
+<!--         # Run HISAT alignment for the current pair of reads -->
+<!--         /home/shared/hisat2-2.2.1/hisat2 \ -->
+<!--         -x ../output/hisat/GCF_026571515.1_index \ -->
+<!--         -p 48 \ -->
+<!--         -1 "$input_directory/$read1" \ -->
+<!--         -2 "$input_directory/$read1" \ -->
+<!--         -S "$output_sam" \ -->
+<!--         2>&1 | tee "$stats_file" -->
+<!--     else -->
+<!--         echo "Warning: Read file '$read1' does not exist" -->
+<!--     fi -->
+<!-- done -->
 
 ```
 
@@ -139,8 +139,10 @@ find ../data/raw/*gz \
 -1 ../data/raw/{}_R1_001.fastq.gz \
 -2 ../data/raw/{}_R2_001.fastq.gz \
 -S ../output/hisat/hisat_out/{}.sam
-2>&1 | tee ../output/hisat/hisat_out/{}hisat2_stats.txt
+2>&1 ../output/hisat/hisat_out/{}hisat2_stats.txt
 
 ```
 3:48
+
+
 

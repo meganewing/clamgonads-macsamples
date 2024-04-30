@@ -116,54 +116,24 @@ library("RColorBrewer")
 library("pheatmap")
 ```
 
-```{r}
-#Regularized log transformation
-rld <- rlog( deseq2.dds, blind = FALSE )
-
-#Get 25 top varying genes
-topVarGenes <- head( order( rowVars (x = assay(rld), useNames = FALSE ), decreasing=TRUE ), 25)
-```
 
 ```{r}
-# make heatmap of top 25 differentially expressed genes
-# get top 25 counts
-top25Counts<-assay(rld)[topVarGenes,]
-head(top25Counts)
+res <- results(deseq2.dds)
+res_ordered <- res[order(res$padj), ]
+top_genes <- row.names(res_ordered)[1:25]
 
-# make the heatmap. Cluster_cols = FALSE neccessary to get the M-T and M-C columns next to eachother (defult leaves em randomized)
-pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 12, fontsize_row = 5, cluster_cols = FALSE)
+# Extract counts and normalize
+counts <- counts(deseq2.dds, normalized = TRUE)
+counts_top <- counts[top_genes, ]
 
-```
+# Log-transform counts
+log_counts_top <- log2(counts_top + 1)
 
-```{r}
-# log2_changes <- deseq2.res[, "log2FoldChange"]
+write.csv(log_counts_top, "../output/log_counts_top.csv")
 
-# Filter for significant genes (adjusted p-value < 0.05)
-significant_results <- subset(deseq2.res, padj < 0.05)
-
-# Sort results by absolute log2 fold change
-significant_results <- significant_results[order(abs(significant_results$log2FoldChange), decreasing = TRUE), ]
-
-# Get top 25 significant genes
-top_25_genes <- head(significant_results, 25)
-
-# Extract log2 fold change values for top 25 genes
-top_25_genes_ids <- rownames(top_25_genes)
-top_25_genes_log2fc <- top_25_genes$log2FoldChange
-
-# Create a matrix containing log2 fold change values of top 25 genes
-top_25_genes_matrix <- count_matrix[top_25_genes_ids, ]
-
-# Plot heatmap for log2 fold change of top 25 genes
-pheatmap(top_25_genes_matrix, 
-         cluster_rows = TRUE, 
+# Generate heatmap
+pheatmap(log_counts_top, 
+         scale = "row", 
          cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for Top 25 DEGs",
-         #color = colorRampPalette(c("blue", "yellow", "red"))(100),  # Choose a color palette
-         breaks = seq(-4, 4, length.out = 101),  # Adjust the breaks for better color resolution
-         fontsize = 8)  # Adjust fontsize as needed
-
-
-
-
+         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
 ```

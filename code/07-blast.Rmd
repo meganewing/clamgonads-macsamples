@@ -41,7 +41,7 @@ library(stringr)
 
 ## 1. Database Creation
 
-[**This part is not unique to the file**]{.underline}, it is creating the database you will use when running blast on your file (ie. you don't need to change this section with each different file of interest).
+[**This part is not unique to your file**]{.underline}, it is creating the database you will use when running blast on your file (ie. you don't need to change this section with each different file of interest).
 
 ### Obtain Fasta (UniProt/Swiss-Prot)
 
@@ -64,7 +64,7 @@ mkdir ../blastdb
 
 ## 2. Getting the query fasta file
 
-This is where you start changing things for your specific file of interest.
+This is where you start [**changing things for your specific file**]{.underline} of interest.
 
 We already have our query rna fasta file.
 
