@@ -137,3 +137,45 @@ pheatmap(log_counts_top,
          cluster_cols = FALSE,
          main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
 ```
+
+
+## DESEq2 using hisat / feature counts output
+```{r}
+
+
+
+
+# DEG list
+
+DEG <- deseq2.res[!is.na(deseq2.res$padj) & deseq2.res$padj <= 0.05, ]
+dim(DEG)
+
+tmp <- deseq2.res
+
+write.table(DEG,"../output/1213-DEG.tab", row.names = T)
+
+
+
+
+# heatmap
+
+res <- results(deseq2.dds)
+res_ordered <- res[order(res$padj), ]
+top_genes <- row.names(res_ordered)[1:25]
+
+# Extract counts and normalize
+counts <- counts(deseq2.dds, normalized = TRUE)
+counts_top <- counts[top_genes, ]
+
+# Log-transform counts
+log_counts_top <- log2(counts_top + 1)
+
+write.csv(log_counts_top, "../output/log_counts_top.csv")
+
+# Generate heatmap
+pheatmap(log_counts_top, 
+         scale = "row", 
+         cluster_cols = FALSE,
+         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
+```
+

@@ -16,3 +16,54 @@ find /home/shared/8TB_HDD_02/mewing0/clamgonads-macsamples/data/raw/*gz \
 -2 /home/shared/8TB_HDD_02/mewing0/clamgonads-macsamples/data/raw/{}_R2_001.fastq.gz \
 -S ../output/{}.sam
 ```
+
+
+#convert sam to bam 
+
+
+```{bash}
+for file in ../output/*sam; do
+    base=$(basename "$file" .sam)
+    /home/shared/samtools-1.12/samtools view -@ 40 -bS "$file" | \
+    /home/shared/samtools-1.12/samtools sort -@ 40 \
+    -o ../output/"$base".bam
+done
+```
+
+
+
+# featurecounts
+
+```{r}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("Rsubread")
+```
+
+```{r}
+library(Rsubread) 
+
+```
+
+```{r}
+featureCounts(files="../output/hisat_bam/*.bam", isPairedEnd=TRUE, nthreads=20)
+```
+
+
+```{bash}
+/home/shared/subread-2.0.5-Linux-x86_64/bin/featureCounts \
+-p --countReadPairs \
+--primary \
+-B \
+-T 20 \
+-C \
+-O \
+-t exon \
+-g gene_id \
+-a ../data/genomic.gtf \
+-o ../output/featurecounts_gene \
+../output/hisat_bam/*bam
+```
+
+

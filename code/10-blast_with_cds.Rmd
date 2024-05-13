@@ -1,7 +1,7 @@
 ---
-title: "Blast"
+title: "Blast with coding sequences"
 output: html_document
-date: "2023-11-28"
+date: "2024-05-10"
 ---
 
 ```{r setup, include=FALSE}
@@ -72,14 +72,14 @@ Taking a peek at that file via `head()` and getting a count of sequences
 
 ```{bash}
 
-head -3 ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna
+head -3 ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 
 ```
 
 ```{bash}
 
 echo "How many sequences are there?"
-grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna
+grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 
 ```
 
@@ -87,9 +87,9 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna
 
 ```{bash}
 /home/shared/ncbi-blast-2.15.0+/bin/blastx \
--query ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna \
+-query ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna \
 -db ../blastdb/uniprot_sprot_r2024_02 \
--out ../output/GCF_026571515.1.tab \
+-out ../output/rphil_blastout_cds.tab \
 -evalue 1E-20 \
 -num_threads 20 \
 -max_target_seqs 1 \
@@ -99,12 +99,12 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/rna.fna
 Peeking at the output file
 
 ```{bash}
-head -2 ../output/GCF_026571515.1.tab
+head -2 ../output/rphil_blastout_cds.tab
 ```
 
 ```{bash}
 echo "Number of lines in output"
-wc -l ../output/GCF_026571515.1.tab
+wc -l ../output/rphil_blastout_cds.tab
 ```
 
 ## 
