@@ -107,4 +107,36 @@ echo "Number of lines in output"
 wc -l ../output/rphil_blastout_cds.tab
 ```
 
-## 
+## Blast cds output does not have LOC information in output, here we will retrieve that to prep for joining with deseq2 out. 
+
+```{bash}
+ cat ../data/ncbi_dataset_202404/data/GCF_026571515.1/cds_from_genomic.fna | grep ">" > ../output/cds_from_genomic_headers.txt
+
+```
+
+```{r}
+
+rphil.blast.cds.headers <- read_delim(file = "../output/cds_from_genomic_headers.txt", delim = "nothing", col_names = "all") %>% 
+  mutate(cds=gsub(">| \\[", "", str_extract(all, ">lcl\\|(.*?) \\[")),
+         gene=gsub("gene=|\\]", "", str_extract(all, "gene=(.*?)\\]")),
+         ncbi_id=gsub("db_xref=GeneID:|\\]", "", str_extract(all, "db_xref=GeneID:(.*?)\\]")),
+         protein=gsub("protein=|\\]", "", str_extract(all, "protein=(.*?)\\]")),
+         protein_id=gsub("protein_id=|\\]", "", str_extract(all, "protein_id=(.*?)\\]")),
+         location=gsub("location=|\\]", "", str_extract(all, "location=(.*?)\\]")),
+         gbkey=gsub("gbkey=|\\]", "", str_extract(all, "gbkey=(.*?)\\]"))) %>% 
+  dplyr::select(-all)
+```
+
+```{r}
+rphil.blast.cds <- right_join(rphil.blast.cds.headers,
+                            read_delim(file = "../output/rphil_blastout_cds.tab",
+                                       delim = "\t", 
+                                       col_names = c("cds", "saccver", "pident", "length",
+                                                     "mismatch", "gapopen", "qstart", "qend",
+                                                     "sstart", "send", "evalue", "bitscore")), 
+                                        by="cds") 
+
+
+write.table(rphil.blast.cds,"../output/rphil_blast_cds.tab", col.names = T)
+
+```

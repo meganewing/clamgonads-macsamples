@@ -55,3 +55,26 @@ write.table(sig_results,"../output/0513-DEG.tab", row.names = T, col.names = T)
 
 ```
 
+```{r}
+
+
+# COMMENTING OUT - ABANDONED CHUNK
+#
+#
+#
+#
+# prepping DEG table for joining with blast results in next step by adding in the gene long ids
+# 
+# deg_noname <- read.csv("../output/0513-DEG.tab", sep = " ")
+# colnames(deg_noname) <- c("LOC", "baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj")
+# 
+# #getting the long gene id names that we will join with blast
+# gene_id <- data.frame(rownames(featureCounts), featureCounts$Chr)
+# 
+# #merging those IDs back to our DEGs
+# deg_names <- merge(x = deg_noname, y = gene_id, by.x = "LOC", by.y = "rownames.featureCounts.")
+# 
+# #writing the output to a file (overwriting previous one)
+# write.table(deg_names,"../output/0513-DEG.tab", col.names = T)
+
+```
