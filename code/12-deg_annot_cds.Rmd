@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # install.packages("R.utils")
 library(tidyverse)
 library(R.utils)
+library(dplyr)
 
 ```
 
@@ -55,7 +56,7 @@ head(blast)
 ```{r}
 # join by gene name
 
-DEG_Blast <- merge(x = DEG, y = blast, by = "LOC")
+DEG_Blast <- left_join(x = DEG, y = blast, by = "LOC")
 head(DEG_Blast)
 
 write_delim(DEG_Blast, "../output/DEG_blast_cds_full.tab")
@@ -88,6 +89,10 @@ head(DEG_annot)
 # write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
 write.table(uniprot_id, "../output/uniprot_id_cds.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
+uniprot_id_no_NA <- na.omit(uniprot_id)
+write.table(uniprot_id_no_NA, "../output/uniprot_id_cds_no_NA.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+
 ```
 
 ```{r}
@@ -114,3 +119,22 @@ head(clam_GO_annotations)
 
 write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0514.csv")
 ```
+
+```{r}
+# getting a full list of *all* of the accession numbers for gene enrichment
+# this is to get just the numbers from the geneName column for uniprot
+# so sp|S8FGV1|LAC... becomes just S8FGV1
+uniprot_id_full <- substr(rphil_blast_cds$saccver, 4, 9)
+
+head(uniprot_id_full)
+
+# write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
+write.table(uniprot_id_full, "../output/uniprot_id_cds_full.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+
+```
+
+
+
+
+

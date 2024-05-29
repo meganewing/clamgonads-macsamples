@@ -1,0 +1,67 @@
+---
+title: "deg figure"
+author: "Megan Ewing"
+date: "2024-05-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(dplyr)
+```
+
+```{r}
+# read in log count data: matrix of LOC x Sample with log count as value
+log_counts_top <- read.csv("../output/log_counts_top.csv", row.names = NULL)
+names(log_counts_top)[1] <- "LOC"
+
+
+# read in blast output with LOC and accession info (maybe just get the go terms?)
+blastout <- read.csv("../output/clam_GO_annotations_cds_0514.csv", row.names=1)
+
+```
+
+```{r}
+# join by common LOC
+
+top_counts_GO <- left_join(log_counts_top, blastout, by = "LOC")
+head(top_counts_GO)
+
+```
+
+
+```{r}
+
+df2 <- top_counts_GO
+df1 <- read.csv("../output/goterm_annot_id.csv", row.names = NULL)
+
+
+
+# Define a function to find the matching value
+get_matching_col1 <- function(row, df2) {
+  match_found <- df2 %>%
+    filter(row["uniprot_id"] %in% colnames()) %>%
+    select(col1) %>%
+    unlist() %>%
+    unique()
+  if (length(match_found) == 0) return(NA)
+  return(match_found[1])
+}
+
+# Apply the function to df1
+df1$col1_match <- apply(df1, 1, get_matching_col1, df2 = df2)
+
+# View the updated df1
+print(df1)
+
+
+```
+
+
+
+
+

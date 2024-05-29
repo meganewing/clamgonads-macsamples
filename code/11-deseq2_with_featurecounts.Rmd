@@ -54,6 +54,30 @@ head(sig_results)
 write.table(sig_results,"../output/0513-DEG.tab", row.names = T, col.names = T)
 
 ```
+### heatmap
+```{r}
+library(pheatmap)
+
+res_ordered <- res[order(res$padj), ]
+top_genes <- row.names(res_ordered)[1:25]
+
+# Extract counts and normalize
+counts <- counts(dds, normalized = TRUE)
+counts_top <- counts[top_genes, ]
+
+# Log-transform counts
+log_counts_top <- log2(counts_top + 1)
+
+write.csv(log_counts_top, "../output/log_counts_top.csv")
+
+# Generate heatmap
+pheatmap(log_counts_top, 
+         scale = "row", 
+         cluster_cols = FALSE,
+         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
+```
+
+
 
 ```{r}
 
