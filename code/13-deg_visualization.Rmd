@@ -31,6 +31,8 @@ blastout <- read.csv("../output/clam_GO_annotations_cds_0514.csv", row.names=1)
 top_counts_GO <- left_join(log_counts_top, blastout, by = "LOC")
 head(top_counts_GO)
 
+write.csv(top_counts_GO, "../output/top_counts_GO.csv")
+
 ```
 
 
