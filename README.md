@@ -18,11 +18,11 @@ RNA seq analysis was done twice: using kallisto (psuedoalignment) and hisat (ali
 - DESeq2 (v1.38.3)
 - BLAST (v2.15.0) 
 
-## RNA seq data: oocytes from manila clams (_Ruditapes philippinarum_) treated for 30 days in acidic (7.35 pH) and non-acidic (7.95 pH) conditions.
+### RNA seq data: oocytes from manila clams (_Ruditapes philippinarum_) treated for 30 days in acidic (7.35 pH) and non-acidic (7.95 pH) conditions.
 
  Data courtesy of Mackenzie Gavery (NOAA). 
 
-## Data Location
+### Data Location
 All RNA seq raw data files can be found [here](https://gannet.fish.washington.edu/fish546_2021/Files_Giles_Uploaded_For_Chris/)
 
   - The `R1` or `R2` in the file names correspond to the read ends
