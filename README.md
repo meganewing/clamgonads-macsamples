@@ -23,7 +23,7 @@ RNA seq analysis was done twice: using kallisto (psuedoalignment) and hisat (ali
  Data courtesy of Mackenzie Gavery (NOAA). 
 
 ### Data Location
-All RNA seq raw data files can be found [here](https://gannet.fish.washington.edu/fish546_2021/Files_Giles_Uploaded_For_Chris/)
+All RNA seq raw data files can be found [here](https://gannet.fish.washington.edu/mewing0/Man_clam_raw/)
 
   - The `R1` or `R2` in the file names correspond to the read ends
   - Naming schemes for read files can be found in methods writeup linked above (table 1).
