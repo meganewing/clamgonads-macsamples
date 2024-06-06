@@ -13,6 +13,7 @@ Where outputs from code are directed or moved to
 - `kallisto.isoform.TPM.not_cross_norm.runTMM.R` kallisto output
 - `kallisto.isoform.counts.matrix` trinity count matrix from kallisto
 - `kallisto.matrix.tab` trinity count matrix from kallisto saved as .tab file
+- `uniprot_id.txt` list of just uniprot ids for DEGs
   
 
 #### HiSAT workflow outputs
@@ -23,7 +24,9 @@ Where outputs from code are directed or moved to
 - `goterm_annot_id.csv` trying to link which uniprot accession numbers are associated with each go term. non important file, just playing around
 - `heatmap_top25_DEGs.png` heatmap of top 25 genes generated as part of hisat workflow / from featurecounts matrix with deseq
 - `log_counts_top.csv` counts of top 25 DEG for each sample
-- 
+- `uniprot_id_cds.txt` list of just uniprot ids for DEGs (from blast with cds)
+- `uniprot_id_cds_full.txt` list of all the uniprot ids returned from blast with cds
+- `uniprot_id_cds_no_NA.txt` list of all the uniprot ids returned from blast with cds, with NAs removed
 
 
 
