@@ -7,6 +7,10 @@ RNA seq analysis was done twice: using kallisto (psuedoalignment) and hisat (ali
 `data/` has **data** for analyses
 `output/` has any **outputs** or files created during analyes
 
+#### figures saved to main directory
+`heatmap_top25_DEGs.png` heatmap of top 25 differentially expressed genes (from hisat workflow)
+`revigo_treemap.pdf` treemap of enriched biological proccesses (from hisat workflow)
+
 ##### Software information
 - OS: macOS Monterey (v12.7.4)
 - RStudio (via Raven) (v2023.03.0; R v4.2.3)
@@ -32,3 +36,5 @@ All RNA seq raw data files can be found [here](https://gannet.fish.washington.ed
 File names for the project are generally formatted `step#-description` for kallisto workflow. Additional workflow with hisat has similar naming scheme, though does not start back at step 1 and rather continues forward from the kallisto workflow. ie: `09- SRhisat_alignment.Rmd` is the start of the hisat workflow.
 
 Old file names / draft code names have no leading numbers and are descriptively named only.
+
+More workflow information available in the `code/` readme
