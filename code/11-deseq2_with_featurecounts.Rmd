@@ -15,6 +15,7 @@ library(DESeq2)
 
 # Read the FeatureCounts output file into R
 featureCounts <- read.table("../output/featurecounts_gene", header=TRUE, row.names=1)
+head(featureCounts)
 
 #subset from feature counts of just the count data
 countData <- featureCounts[, -(1:5)] 

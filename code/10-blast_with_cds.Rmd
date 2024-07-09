@@ -115,6 +115,7 @@ wc -l ../output/rphil_blastout_cds.tab
 ```
 
 ```{r}
+# from lauras comment: https://github.com/RobertsLab/resources/issues/1897
 
 rphil.blast.cds.headers <- read_delim(file = "../output/cds_from_genomic_headers.txt", delim = "nothing", col_names = "all") %>% 
   mutate(cds=gsub(">| \\[", "", str_extract(all, ">lcl\\|(.*?) \\[")),
@@ -128,6 +129,8 @@ rphil.blast.cds.headers <- read_delim(file = "../output/cds_from_genomic_headers
 ```
 
 ```{r}
+# from lauras comment: https://github.com/RobertsLab/resources/issues/1897 
+
 rphil.blast.cds <- right_join(rphil.blast.cds.headers,
                             read_delim(file = "../output/rphil_blastout_cds.tab",
                                        delim = "\t", 
@@ -138,5 +141,23 @@ rphil.blast.cds <- right_join(rphil.blast.cds.headers,
 
 
 write.table(rphil.blast.cds,"../output/rphil_blast_cds.tab", col.names = T)
+
+```
+
+```{r}
+# making new blast result that has just the best hit -- getting it down to the gene level instead of isoform
+
+# Load necessary library
+library(dplyr)
+
+# Read BLAST results
+blast_results <- rphil.blast.cds
+
+# Extract the best hit based on the lowest e-value for each gene
+best_hits <- blast_results %>% group_by(gene) %>% dplyr::slice(which.min(evalue)) %>% separate(saccver, sep="\\|", into=c("na", "SPID", "gene.Uni"), remove = F) %>% dplyr::select(-na) %>% separate(gene.Uni, sep="_", into=c("gene.Uni", "species"), remove=T)
+
+# Save best hits
+write.table(best_hits, "../output/blast_out_gene_level_20240709.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+
 
 ```
