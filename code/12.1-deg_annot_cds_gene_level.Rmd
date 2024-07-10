@@ -125,7 +125,18 @@ write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0709.csv")
 
 ```{r}
 
+## putting together a file that combines annotations, counts, and deseq results for all hits with p < 0.05
 
+counts2 <- read_csv("../output/log_counts_all.csv")
+head(counts2)
+
+colnames(counts2)[1] <- "LOC"
+head(counts2)
+
+all_counts_annot <- left_join(x = counts2, y = clam_GO_annotations, by = "LOC")
+head(all_counts_annot)
+
+write.csv(all_counts_annot, "../output/counts_annot_all-0710.csv")
 
 ```
 
