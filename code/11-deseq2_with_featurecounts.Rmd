@@ -91,8 +91,8 @@ write.csv(log_counts_top, "../output/log_counts_top.csv")
 all_genes <- row.names(res_ordered)[1:54]
 
 # Extract counts and normalize
-counts <- counts(dds, normalized = TRUE)
-counts_all <- counts[all_genes, ]
+counts3 <- counts(dds, normalized = TRUE)
+counts_all <- counts3[all_genes, ]
 
 # Log-transform counts
 log_counts_all <- log2(counts_all + 1)
