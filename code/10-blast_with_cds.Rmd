@@ -157,7 +157,14 @@ blast_results <- rphil.blast.cds
 best_hits <- blast_results %>% group_by(gene) %>% dplyr::slice(which.min(evalue)) %>% separate(saccver, sep="\\|", into=c("na", "SPID", "gene.Uni"), remove = F) %>% dplyr::select(-na) %>% separate(gene.Uni, sep="_", into=c("gene.Uni", "species"), remove=T)
 
 # Save best hits
-write.table(best_hits, "../output/blast_out_gene_level_20240709.txt", sep = "\t", row.names = FALSE, col.names = TRUE)
+write.table(best_hits, "../output/blast_out_gene_level_20240709.txt", row.names = T, col.names = T)
+
+
+
+```
+
+```{r}
+
 
 
 ```

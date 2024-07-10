@@ -1,0 +1,136 @@
+---
+title: "12-deg_annot_from_hisat"
+author: "Megan Ewing"
+date: "2024-05-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# do once
+# install.packages("R.utils")
+library(tidyverse)
+library(R.utils)
+library(dplyr)
+
+```
+
+## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
+
+```{r}
+
+#read in DEG results
+DEG <- read.csv("../output/0513-DEG.tab", sep = " ")
+head(DEG)
+
+```
+
+```{r}
+# make column with LOC names
+
+LOCnames <- rownames(DEG)
+
+DEG$LOC <- LOCnames
+
+head(DEG)
+
+```
+
+```{r}
+# read in BLAST results
+blast <- read.csv("~/clamgonads-macsamples/output/blast_out_gene_level_20240709.txt", sep="")
+head(blast)
+```
+
+```{r}
+# make sure the column names are the same for the merge
+# not needed if you specify "by.x" and "by.y" in the merge function tho 
+
+colnames(blast)[2] <- "LOC"
+head(blast)
+```
+
+```{r}
+# join by gene name
+
+DEG_Blast <- left_join(x = DEG, y = blast, by = "LOC")
+head(DEG_Blast)
+
+write_delim(DEG_Blast, "../output/DEG_blast_cds_full_0709.tab")
+
+```
+
+```{r}
+# make a short file of just the DEG names and other desired data
+
+DEG_annot <- data.frame( LOC = DEG_Blast$LOC, geneName = DEG_Blast$SPID, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj, protein = DEG_Blast$protein, cds = DEG_Blast$cds  )
+
+head(DEG_annot)
+
+
+```
+
+```{r}
+# retrieve gene names for uniprot id lookup
+
+# this is to get just the numbers from the geneName column for uniprot
+# so sp|S8FGV1|LAC... becomes just S8FGV1
+uniprot_id <-DEG_annot$geneName[!is.na(DEG_annot$geneName)]
+head(uniprot_id)
+
+# write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
+write.table(uniprot_id, "../output/uniprot_id_cds_genelevel_DEG_0709.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+# and now for all the uniprot ids at the gene level that blast had
+write.table(blast$SPID, "../output/uniprot_id_cds_genelevel_FULL_0709.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+# retrieved our unirpot id GO file from the web interface https://www.uniprot.org/
+# importing and unzipping file here
+
+gunzip("../data/idmapping_2024_07_10.tsv.gz")
+
+GO_id <- read.csv("../data/idmapping_2024_07_10.tsv", sep = '\t', header = TRUE, row.names=NULL)
+head(GO_id)
+```
+
+```{r}
+# join GO id info to our DEG_annot dataframe from earlier by the uniprot ids
+
+clam_GO_annotations <- merge(DEG_annot, GO_id, by.x = "geneName", by.y = "Entry")
+head(clam_GO_annotations)
+
+```
+
+```{r}
+# siic it looks all good so let's write to file
+
+write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0709.csv")
+```
+
+```{r}
+
+
+
+```
+
+
+
+
+
+
