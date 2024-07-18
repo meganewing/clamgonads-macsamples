@@ -17,7 +17,7 @@ library(R.utils)
 library(dplyr)
 
 ```
-# Gene level with deseq2 filtering (10+reads avg of 3+samples)
+# Gene level with deseq2 pre filtering (10+reads avg of 3+samples)
 
 ## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
 

@@ -18,7 +18,9 @@ library(dplyr)
 
 ```
 
-## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
+## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids 
+
+# Gene Level - No Pre Filter
 
 ```{r}
 
@@ -89,15 +91,6 @@ write.table(blast$SPID, "../output/uniprot_id_cds_genelevel_FULL_0709.txt", sep 
 
 ```
 
-
-
-
-
-
-
-
-
-
 ```{r}
 
 # retrieved our unirpot id GO file from the web interface https://www.uniprot.org/
@@ -139,9 +132,3 @@ head(all_counts_annot)
 write.csv(all_counts_annot, "../output/counts_annot_all-0710.csv")
 
 ```
-
-
-
-
-
-

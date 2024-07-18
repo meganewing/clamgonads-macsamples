@@ -133,8 +133,3 @@ write.table(uniprot_id_full, "../output/uniprot_id_cds_full.txt", sep = "\t", ro
 
 
 ```
-
-
-
-
-
