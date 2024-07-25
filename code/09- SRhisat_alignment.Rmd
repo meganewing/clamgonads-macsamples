@@ -30,6 +30,13 @@ for file in ../output/*sam; do
 done
 ```
 
+# missed 193 in the SR sam to bam conversion, adding in now
+```{bash}
+
+/home/shared/samtools-1.12/samtools view -@ 20 -bS ../output/hisat/hisat_out/M-C-193.sam | \
+/home/shared/samtools-1.12/samtools sort -@ 20 -o ../output/hisat_bam/M-C-193.bam
+
+```
 
 
 # featurecounts
@@ -47,10 +54,13 @@ library(Rsubread)
 ```
 
 ```{r}
-featureCounts(files="../output/hisat_bam/*.bam", isPairedEnd=TRUE, nthreads=20)
+
+# this chunk doesnt wokr
+featureCounts(files="../output/hisat_bam/", isPairedEnd=TRUE, nthreads=20)
+
 ```
 
-
+## featurecounts command
 ```{bash}
 /home/shared/subread-2.0.5-Linux-x86_64/bin/featureCounts \
 -p --countReadPairs \
