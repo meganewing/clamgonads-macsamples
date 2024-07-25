@@ -26,8 +26,8 @@ countData <- featureCounts[, -(1:5)]
 
 ```{r}
 metaData <- data.frame(
-  sample = c("M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329", "M.C.334", "M.C.337", "M.C.339", "M.C.358", "M.C.360", "M.C.363", "M.C.373", "M.C.482","M.C.488", "M.T.18",  "M.T.20", "M.T.22", "M.T.235", "M.T.245", "M.T.29", "M.T.31", "M.T.32", "M.T.399", "M.T.43", "M.T.44", "M.T.500", "M.T.7", "M.T.83", "M.T.8"),
-  treatment = c(rep("control", 14), rep("treatment", 15))
+  sample = c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329", "M.C.334", "M.C.337", "M.C.339", "M.C.358", "M.C.360", "M.C.363", "M.C.373", "M.C.482","M.C.488", "M.T.18",  "M.T.20", "M.T.22", "M.T.235", "M.T.245", "M.T.29", "M.T.31", "M.T.32", "M.T.399", "M.T.43", "M.T.44", "M.T.500", "M.T.7", "M.T.83", "M.T.8"),
+  treatment = c(rep("control", 15), rep("treatment", 15))
   )
 ```
 
@@ -164,15 +164,30 @@ dds2 <- DESeq(dds2)
 res2 <- results(dds2)
 
 # save
-write.table(res2, "../output/0709-DeSeq_AllCounts_filtered.tab", row.names = T, col.names = T)
-
-
-
-
-
+write.table(res2, "../output/0725-DeSeq_AllCounts_filtered.tab", row.names = T, col.names = T)
 
 
 ```
+
+### Filtered: data explore and filtering significant 
+```{r}
+allcounts <- read.csv("../output/0725-DeSeq_AllCounts_filtered.tab", sep="")
+head(allcounts)
+
+# Extract significant results
+sigresults <- res2[which(res2$padj < 0.05),]
+
+# Explore the results
+head(sigresults)
+
+write.table(sigresults,"../output/0725-DEG_filtered.tab", row.names = T, col.names = T)
+
+# peeking at sigresults
+sigres_table <- read.csv("../output/0725-DEG_filtered.tab", sep="")
+head(sigres_table)
+
+```
+
 
 ### Filtered: Heatmap of Top 25 Sig. DEG
 
@@ -210,40 +225,41 @@ pheatmap(log_counts_top,
 dev.off()
 ```
 
-### Filtered: Heatmap of All (54) Sig. DEG
+### Filtered: Heatmap of All Sig. DEG
 
 ```{r}
+
 library(pheatmap)
 
 res_ordered <- res2[order(res2$padj), ]
 
-# getting a all (54 is total number, left it so there's less for me to edit code wise)
-all_genes <- row.names(res_ordered)[1:54]
+# getting a all (84 is total number, left it so there's less for me to edit code wise)
+all_deg <- row.names(res_ordered)[1:84]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
-counts_all <- counts[all_genes, ]
+counts_deg <- counts[all_deg, ]
 
 # Log-transform counts
-log_counts_all <- log2(counts_all + 1)
+log_counts_deg <- log2(counts_deg + 1)
 
 # shorten col names
-short_col <- c("M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
+short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
 ,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
 
-colnames(log_counts_all) <- short_col
-head(log_counts_all)
+colnames(log_counts_deg) <- short_col
+head(log_counts_deg)
 
-write.csv(log_counts_top, "../output/log_counts_all_filtered.csv")
+write.csv(log_counts_deg, "../output/0725-logcounts_allDEG_filtered.csv")
 
 # Open a PNG device to save the plot
-png("../output/heatmap_all_DEGs_filtered.png")
+png("../output/0725-heatmap_all_DEGs_filtered.png", width = 1000, height = 1000)
 
 # Generate the heatmap
-pheatmap(log_counts_all, 
+pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
+         main = "Heatmap of Log2 Fold Change for All DEGs (padj < 0.05, pre-filtered)")
 
 # Close the PNG device
 dev.off()
