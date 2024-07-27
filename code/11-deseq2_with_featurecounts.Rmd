@@ -7,6 +7,8 @@ output: html_document
 
 ```{r}
 # Load the DESeq2 library
+# install.packages("BiocManager")
+# BiocManager::install("DESeq2")
 library(DESeq2)
 
 ```
@@ -142,7 +144,7 @@ pheatmap(log_counts_all,
 dev.off()
 ```
 
-### Filtered: Running DESeq 
+### Filtered: Running DESeq
 
 (hits must average 10+ reads across 3+ samples)
 
@@ -154,7 +156,7 @@ dev.off()
 mean_counts <- rowMeans(counts(dds))
 
 # Filter genes that have at least 10 reads across 3 or more samples
-filter <- rowSums(counts(dds) >= 10) >= 3
+filter <- rowSums(counts(dds) >= 10) >= 30
 dds2 <- dds[filter, ]
 
 # Normalize the data
@@ -169,9 +171,38 @@ write.table(res2, "../output/0725-DeSeq_AllCounts_filtered.tab", row.names = T, 
 
 ```
 
-### Filtered: data explore and filtering significant 
+### Filtered: Running DESeq, Separated Treatment and Control
+
+Filtering the treatment and control groups separately so that we can filter by each group averaging X reads rather than all of the samples at once
+
 ```{r}
-allcounts <- read.csv("../output/0725-DeSeq_AllCounts_filtered.tab", sep="")
+
+# Assume `dds` is your DESeqDataSet object
+
+# Pre-filtering step
+# Calculate the mean read count per gene in the control and treatment samples
+mean_counts_control <- rowMeans(counts(dds)[, 1:15])
+mean_counts_treatment <- rowMeans(counts(dds)[, 16:30])
+
+# Filter genes that have an average of at least 10 reads in either control or treatment samples
+filter <- (mean_counts_control >= 10) | (mean_counts_treatment >= 10)
+dds2 <- dds[filter, ]
+
+# Normalize the data
+dds2 <- DESeq(dds2)
+
+# Perform differential expression analysis
+res2 <- results(dds2)
+
+# Save the results
+write.table(res2, "../output/0727-DeSeq_AllCounts_filteredbygroup.tab", row.names = TRUE, col.names = TRUE)
+
+```
+
+### Filtered: data explore and filtering significant
+
+```{r}
+allcounts <- read.csv("../output/0727-DeSeq_AllCounts_filteredbygroup.tab", sep="")
 head(allcounts)
 
 # Extract significant results
@@ -186,8 +217,11 @@ write.table(sigresults,"../output/0725-DEG_filtered.tab", row.names = T, col.nam
 sigres_table <- read.csv("../output/0725-DEG_filtered.tab", sep="")
 head(sigres_table)
 
-```
+sigDEGname <- row.names(sigres_table)
 
+write.table(sigDEGname, "../output/0727-DEGlist.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+```
 
 ### Filtered: Heatmap of Top 25 Sig. DEG
 
@@ -234,7 +268,7 @@ library(pheatmap)
 res_ordered <- res2[order(res2$padj), ]
 
 # getting a all (84 is total number, left it so there's less for me to edit code wise)
-all_deg <- row.names(res_ordered)[1:84]
+all_deg <- row.names(res_ordered)[1:87]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
@@ -253,13 +287,13 @@ head(log_counts_deg)
 write.csv(log_counts_deg, "../output/0725-logcounts_allDEG_filtered.csv")
 
 # Open a PNG device to save the plot
-png("../output/0725-heatmap_all_DEGs_filtered.png", width = 1000, height = 1000)
+png("../output/0725-DEG_heatmap_10r_TorC.png", width = 1000, height = 1000)
 
 # Generate the heatmap
 pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for All DEGs (padj < 0.05, pre-filtered)")
+         main = "Heatmap All DEGs (padj < 0.05, pre-filtered 10r T or C)")
 
 # Close the PNG device
 dev.off()
