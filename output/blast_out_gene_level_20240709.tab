@@ -1,0 +1,2 @@
+"cds" "gene" "ncbi_id" "protein" "protein_id" "location" "gbkey" "saccver" "SPID" "gene.Uni" "species" "pident" "length" "mismatch" "gapopen" "qstart" "qend" "sstart" "send" "evalue" "bitscore"
+"1" "lcl|NW_026851516.1_cds_XP_060598190.1_18" NA NA NA NA NA NA "sp|A4IHD2|ARIP4_XENTR" "A4IHD2" "ARIP4" "XENTR" 54.06 899 367 13 1579 4167 228 1116 0 945

@@ -28,6 +28,74 @@ DEGstats <- read.csv("../output/0725-DEGstats_filteredbygroup.tab", sep="")
 
 DEGcounts <- read.csv("../output/0725-logcounts_allDEG_filtered.csv")
 
-annot_info <- read.csv("../output/deg_blast_cds_full_0709.tab", sep="")
+annot_info <- read.csv("../output/blast_out_gene_level_20240730.tab", sep="")
+
+```
+
+### Merging together all of the files of interest by LOC
+
+```{r}
+
+# prep stats file
+DEGstats$gene <- row.names(DEGstats)
+DEGstats$ncbi_id <- substr(DEGstats$gene, 4, 12)
+
+# tried merge by both gene and ncbi, but same output
+annot_stats <- merge(annot_info, DEGstats, "ncbi_id")
+
+#prep counts file
+DEGcounts$gene.x <- DEGcounts$X
+
+# merge by gene
+annot_stats_counts <- merge(annot_stats, DEGcounts, "gene.x")
+
+# write to file
+
+write.csv(annot_stats_counts, "../output/0730-annot_stats_counts_post_filter_merge.tab")
+
+```
+
+### Simplifying for columns of interest
+
+```{r}
+
+post_filter_simple <- data.frame("gene" = annot_stats_counts$gene.x, 
+                                 "SPID" = annot_stats_counts$SPID, 
+                                 "protein" = annot_stats_counts$protein, 
+                                 "evalue" = annot_stats_counts$evalue, 
+                                 "baseMean" = annot_stats_counts$baseMean, 
+                                 "log2FoldChange" = annot_stats_counts$log2FoldChange, 
+                                 "pvalue" = annot_stats_counts$pvalue, 
+                                 "padj" = annot_stats_counts$padj, 
+                                 "length" = annot_stats_counts$length)
+
+
+```
+
+### Recurrent genes across pre-filter parameters
+
+```{r}
+# only selecting for LOC that popped up across all 4 pre-filters
+
+# vector of genes that recurred 
+occursmost <- c("LOC132713118", "LOC132722155", "LOC132722176", "LOC132723296", 
+            "LOC132725056", "LOC132728236", "LOC132729677", "LOC132730403", 
+            "LOC132731011", "LOC132732296", "LOC132734395", "LOC132740341", 
+            "LOC132741452", "LOC132741637", "LOC132742068", "LOC132743875", 
+            "LOC132745166", "LOC132745822", "LOC132746012", "LOC132746399", 
+            "LOC132746437", "LOC132746792", "LOC132752133", "LOC132752300", 
+            "LOC132758254", "LOC132758583", "LOC132758975", "LOC132759052", 
+            "LOC132759372", "LOC132759828")
+
+# dataframe of genes that recurred
+occursmost <- data.frame("gene" = occursmost)
+
+```
+
+```{r}
+
+# merging recurrent gene list to dataframe
+
+recurring_annot_stats <- merge(post_filter_simple, occursmost, "gene")
 
 ```
