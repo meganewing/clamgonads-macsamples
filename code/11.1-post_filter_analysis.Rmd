@@ -1,0 +1,33 @@
+---
+title: "post filtering analysis"
+author: "Megan Ewing"
+date: "2024-07-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+|                                                                                                    |                                              |
+|----------------------------------------------------------------------------------------------------|----------------------------------------------|
+| **by group, files of interest**                                                                    |                                              |
+| DEG stats                                                                                          | ../output/0725-DEGstats_filteredbygroup.tab  |
+| DEG counts                                                                                         | ../output/0725-logcounts_allDEG_filtered.csv |
+| Annot info                                                                                         | ../output/deg_blast_cds_full_0709.tab        |
+|                                                                                                    |                                              |
+| want to take all of those, and get the data for the list of genes that have 4 hits for pre filters |                                              |
+
+### Reading in files of interest
+
+*Prefilter paramaters: Average of 10+ reads across at least one treatment or control*
+
+```{r}
+
+DEGstats <- read.csv("../output/0725-DEGstats_filteredbygroup.tab", sep="")
+
+DEGcounts <- read.csv("../output/0725-logcounts_allDEG_filtered.csv")
+
+annot_info <- read.csv("../output/deg_blast_cds_full_0709.tab", sep="")
+
+```
