@@ -69,6 +69,8 @@ post_filter_simple <- data.frame("gene" = annot_stats_counts$gene.x,
                                  "padj" = annot_stats_counts$padj, 
                                  "length" = annot_stats_counts$length)
 
+write.csv(post_filter_simple, "../output/0730-post_filter_simple.tab")
+
 
 ```
 
@@ -97,5 +99,7 @@ occursmost <- data.frame("gene" = occursmost)
 # merging recurrent gene list to dataframe
 
 recurring_annot_stats <- merge(post_filter_simple, occursmost, "gene")
+
+write.csv(recurring_annot_stats, "../output/0730-post_filter_recurring_annot_stats.tab")
 
 ```
