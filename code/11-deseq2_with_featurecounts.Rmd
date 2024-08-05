@@ -156,7 +156,7 @@ dev.off()
 mean_counts <- rowMeans(counts(dds))
 
 # Filter genes that have at least 10 reads across 3 or more samples
-filter <- rowSums(counts(dds) >= 10) >= 30
+filter <- rowSums(counts(dds) >= 10) >= 5
 dds2 <- dds[filter, ]
 
 # Normalize the data
@@ -174,6 +174,8 @@ write.table(res2, "../output/0725-DeSeq_AllCounts_filtered.tab", row.names = T, 
 ### Filtered: Running DESeq, Separated Treatment and Control
 
 Filtering the treatment and control groups separately so that we can filter by each group averaging X reads rather than all of the samples at once
+
+*need to alter chunk so it is filtering based off "at least 10 individuals have 5+ reads" rather than "an average of 5 reads across 10 individuals" – don't want one individual driving up the average*
 
 ```{r}
 
@@ -204,7 +206,7 @@ write.table(res2, "../output/0727-deseqres_filteredbygroup.tab", row.names = TRU
 rename input/output files as needed
 
 ```{r}
-allcounts <- read.csv("../output/0727-deseqres_filteredbygroup.tab", sep="")
+allcounts <- read.csv("../output/0725-DeSeq_AllCounts_filtered.tab", sep="")
 head(allcounts)
 
 # Extract significant results
@@ -213,15 +215,15 @@ sigresults <- res2[which(res2$padj < 0.05),]
 # Explore the results
 head(sigresults)
 
-write.table(sigresults,"../output/0725-DEGstats_filteredbygroup.tab", row.names = T, col.names = T)
+write.table(sigresults,"../output/0731-DEGstats_filtered10r5n.tab", row.names = T, col.names = T)
 
 # peeking at sigresults
-sigres_table <- read.csv("../output/0725-DEGstats_filteredbygroup.tab", sep="")
+sigres_table <- read.csv("../output/0731-DEGstats_filtered10r5n.tab", sep="")
 head(sigres_table)
 
 sigDEGname <- row.names(sigres_table)
 
-write.table(sigDEGname, "../output/0727-DEGnames_filteredbygroup.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(sigDEGname, "../output/0727-DEGnames_filtered10r5n.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ```
 
@@ -269,7 +271,7 @@ library(pheatmap)
 res_ordered <- res2[order(res2$padj), ]
 
 # getting a all (84 is total number, left it so there's less for me to edit code wise)
-all_deg <- row.names(res_ordered)[1:87]
+all_deg <- row.names(res_ordered)[1:77]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
@@ -285,16 +287,16 @@ short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" 
 colnames(log_counts_deg) <- short_col
 head(log_counts_deg)
 
-write.csv(log_counts_deg, "../output/0725-logcounts_allDEG_filtered.csv")
+write.csv(log_counts_deg, "../output/0731-logcounts_allDEG_filtered10r5n.csv")
 
 # Open a PNG device to save the plot
-png("../output/0725-DEG_heatmap_10r_TorC.png", width = 1000, height = 1000)
+png("../output/0731-DEG_heatmap_10r5n_unc.png", width = 1000, height = 1000)
 
 # Generate the heatmap
 pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = FALSE,
-         main = "Heatmap All DEGs (padj < 0.05, pre-filtered 10r T or C)")
+         main = "Heatmap All DEGs (padj < 0.05, pre-filtered 10r5n")
 
 # Close the PNG device
 dev.off()
@@ -323,40 +325,53 @@ occursmost <- c("LOC132713118", "LOC132722155", "LOC132722176", "LOC132723296",
 ```
 
 ```{r}
+# Load the necessary library
 library(pheatmap)
 
+# Order the results by adjusted p-value
 res_ordered <- res2[order(res2$padj), ]
 
-# getting a all (87 is total number, left it so there's less for me to edit code wise)
+# Get the top differentially expressed genes (all 84 genes)
 all_deg <- row.names(res_ordered)[1:87]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
-counts_deg <- counts[occursmost, ]
+counts_deg <- counts[all_deg, ]
 
-# Log-transform counts
+# Log-transform the counts
 log_counts_deg <- log2(counts_deg + 1)
 
-# shorten col names
-short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
-,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
-
+# Shorten column names
+short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43", "M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
 colnames(log_counts_deg) <- short_col
+
+# Display the first few rows to check the transformation
 head(log_counts_deg)
 
-write.csv(log_counts_deg, "../output/0730-logcounts_recurDEG_filtered.csv")
+# Assume occursmost is a vector containing the gene names to include
+# Example: occursmost <- c("Gene1", "Gene2", "Gene3")
+# Filter log_counts_deg to include only the genes in occursmost
+log_counts_deg_filtered <- log_counts_deg[rownames(log_counts_deg) %in% occursmost, ]
 
-# Open a PNG device to save the plot
-png("../output/0730-DEG_heatmap_recurring.png", width = 1000, height = 1000)
+# Ensure all values are finite
+log_counts_deg_filtered <- log_counts_deg_filtered[apply(log_counts_deg_filtered, 1, function(x) all(is.finite(x))), ]
 
-# Generate the heatmap
-pheatmap(log_counts_deg, 
+# Save the filtered log-transformed counts to a CSV file
+write.csv(log_counts_deg_filtered, "../output/0725-logcounts_filtered_occursmost.csv")
+
+# Open a PNG device to save the heatmap
+png("../output/0725-DEG_heatmap_occursmost.png", width = 1000, height = 1000)
+
+# Generate the heatmap with filtered genes
+pheatmap(log_counts_deg_filtered, 
          scale = "row", 
          cluster_cols = FALSE,
-         main = "Heatmap Recurring DEGs (padj < 0.05, pre-filtered 10r T or C as base)")
+         main = "Heatmap Filtered DEGs (occursmost)")
 
 # Close the PNG device
 dev.off()
+
+
 
 ```
 
