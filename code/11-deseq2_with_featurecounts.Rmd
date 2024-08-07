@@ -395,7 +395,7 @@ png("../output/0807-DEG_heatmap_8ind23r_ToC_clust.png", width = 1000, height = 1
 pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = TRUE,
-         main = "Heatmap All DEGs (padj < 0.05, 23r 8ind ToC")
+         main = "Heatmap All DEGs (padj < 0.05, 23r 8ind ToC clustered")
 
 # Close the PNG device
 dev.off()
