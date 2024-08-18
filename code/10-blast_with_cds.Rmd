@@ -91,8 +91,8 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 /home/shared/ncbi-blast-2.15.0+/bin/blastx \
 -query ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna \
 -db ../blastdb/uniprot_sprot_r2024_02 \
--out ../output/rphil_blastout_cds.tab \
--evalue 1E-20 \
+-out ../output/0817-rphil_blastout_cds.tab \
+-evalue 1E-5 \
 -num_threads 20 \
 -max_target_seqs 1 \
 -outfmt 6
@@ -101,12 +101,12 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 Peeking at the output file
 
 ```{bash}
-head -2 ../output/rphil_blastout_cds.tab
+head -2 ../output/0817-rphil_blastout_cds.tab.tab
 ```
 
 ```{bash}
 echo "Number of lines in output"
-wc -l ../output/rphil_blastout_cds.tab
+wc -l ../output/0817-rphil_blastout_cds.tab.tab
 ```
 
 ## Blast cds output does not have LOC information in output, here we will retrieve that to prep for joining with deseq2 out.
