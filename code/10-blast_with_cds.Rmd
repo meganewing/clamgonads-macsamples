@@ -101,12 +101,12 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 Peeking at the output file
 
 ```{bash}
-head -2 ../output/0817-rphil_blastout_cds.tab.tab
+head -2 ../output/0817-rphil_blastout_cds.tab
 ```
 
 ```{bash}
 echo "Number of lines in output"
-wc -l ../output/0817-rphil_blastout_cds.tab.tab
+wc -l ../output/0817-rphil_blastout_cds.tab
 ```
 
 ## Blast cds output does not have LOC information in output, here we will retrieve that to prep for joining with deseq2 out.
@@ -134,7 +134,7 @@ rphil.blast.cds.headers <- read_delim(file = "../output/cds_from_genomic_headers
 # from lauras comment: https://github.com/RobertsLab/resources/issues/1897 
 
 rphil.blast.cds <- right_join(rphil.blast.cds.headers,
-                            read_delim(file = "../output/rphil_blastout_cds.tab",
+                            read_delim(file = "../output/0817-rphil_blastout_cds.tab",
                                        delim = "\t", 
                                        col_names = c("cds", "saccver", "pident", "length",
                                                      "mismatch", "gapopen", "qstart", "qend",
@@ -142,7 +142,7 @@ rphil.blast.cds <- right_join(rphil.blast.cds.headers,
                                         by="cds") 
 
 
-write.table(rphil.blast.cds,"../output/rphil_blast_cds.tab", col.names = T)
+write.table(rphil.blast.cds,"../output/0821-rphil_blast_cds.tab", col.names = T)
 
 ```
 
@@ -159,7 +159,7 @@ blast_results <- rphil.blast.cds
 best_hits <- blast_results %>% group_by(gene) %>% dplyr::slice(which.min(evalue)) %>% separate(saccver, sep="\\|", into=c("na", "SPID", "gene.Uni"), remove = F) %>% dplyr::select(-na) %>% separate(gene.Uni, sep="_", into=c("gene.Uni", "species"), remove=T)
 
 # Save best hits
-write.table(best_hits, "../output/blast_out_gene_level_20240730.tab", row.names = T, col.names = T)
+write.table(best_hits, "../output/blast_out_gene_level_20240820.tab", row.names = T, col.names = T)
 
 
 
