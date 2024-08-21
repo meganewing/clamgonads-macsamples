@@ -22,15 +22,15 @@ library(dplyr)
 ## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
 
 ```{r}
-# for top counts: ../output/log_counts_top_filtered.csv
-# for all counts: ../output/0709-DeSeq_AllCounts_filtered.tab
+# for all counts: ../output/0807-logcounts_allDEG_8ind23r_ToC.csv
+# for DEG stats: ../output/0807-DEGstats_ToC_8ind23r.tab
 
-#read in DEG results
-DEG <- read.csv("../output/log_counts_top_filtered.csv", row.names = 1)
-head(DEG)
+#read in count results
+counts <- read.csv("../output/0807-logcounts_allDEG_8ind23r_ToC.csv", row.names = 1)
+head(counts)
 
 # add in stats
-stats <- read.csv("../output/0709-DeSeq_AllCounts_filtered.tab", sep="")
+stats <- read.csv("../output/0807-DEGstats_ToC_8ind23r.tab", sep="")
 head(stats)
 
 ```
@@ -38,11 +38,11 @@ head(stats)
 ```{r}
 # make column with LOC names
 
-LOCnames <- rownames(DEG)
+LOCnames <- rownames(counts)
 
-DEG$LOC <- LOCnames
+counts$LOC <- LOCnames
 
-head(DEG)
+head(counts)
 
 LOCstat <- rownames(stats)
 
@@ -53,14 +53,14 @@ head(stats)
 ```
 ```{r}
 # joining stats and counts
-DEG <- left_join(x = DEG, y = stats, by = "LOC")
+DEG <- left_join(x = counts, y = stats, by = "LOC")
 head(DEG)
 
 ```
 
 ```{r}
 # read in BLAST results
-blast <- read.csv("../output/blast_out_gene_level_20240709.txt", sep="")
+blast <- read.csv("../output/blast_out_gene_level_20240820.tab", sep="")
 head(blast)
 ```
 
@@ -78,7 +78,7 @@ head(blast)
 DEG_Blast <- left_join(x = DEG, y = blast, by = "LOC")
 head(DEG_Blast)
 
-write_delim(DEG_Blast, "../output/DEG_filtered_blast_cds_full_0709.tab")
+write_delim(DEG_Blast, "../output/0821-DEG_blast_cds_full.tab")
 
 
 ```
@@ -102,10 +102,10 @@ uniprot_id <-DEG_annot$geneName[!is.na(DEG_annot$geneName)]
 head(uniprot_id)
 
 # write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
-write.table(uniprot_id, "../output/uniprot_id_cds_genelevel_filteredEG_0709.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(uniprot_id, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 # and now for all the uniprot ids at the gene level that blast had
-write.table(blast$SPID, "../output/uniprot_id_cds_genelevel_FULL_0709.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+write.table(blast$SPID, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ```
 
