@@ -60,7 +60,7 @@ head(DEG)
 
 ```{r}
 # read in BLAST results
-blast <- read.csv("../output/blast_out_gene_level_20240820.tab", sep="")
+blast <- read.delim("../data/ncbi_dataset.tsv")
 head(blast)
 ```
 
@@ -75,10 +75,15 @@ head(blast)
 ```{r}
 # join by gene name
 
-DEG_Blast <- left_join(x = DEG, y = blast, by = "LOC")
+DEG_Blast <- left_join(x = DEG, y = blast, join_by("LOC" == "Symbol"))
 head(DEG_Blast)
 
-write_delim(DEG_Blast, "../output/0821-DEG_blast_cds_full.tab")
+# there's multiple entries for each LOC because of different isoforms, but we want just the gene level, so we are going to remove duplicates
+
+DEG_Blast <- distinct(DEG_Blast, LOC, .keep_all = TRUE)
+head(DEG_Blast)
+
+# write_delim(DEG_Blast, "../output/0821-DEG_blast_cds_full.tab")
 
 
 ```
