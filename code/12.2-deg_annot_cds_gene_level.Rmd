@@ -83,7 +83,7 @@ head(DEG_Blast)
 DEG_Blast <- distinct(DEG_Blast, LOC, .keep_all = TRUE)
 head(DEG_Blast)
 
-# write_delim(DEG_Blast, "../output/0821-DEG_blast_cds_full.tab")
+write_delim(DEG_Blast, "../output/0826-DEG_blast_cds_full.tab")
 
 
 ```
