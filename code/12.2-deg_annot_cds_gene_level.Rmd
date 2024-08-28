@@ -17,9 +17,12 @@ library(R.utils)
 library(dplyr)
 
 ```
+
 # Gene level with deseq2 pre filtering (10+reads avg of 3+samples)
 
 ## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
+
+Read in DEG count and stats files
 
 ```{r}
 # for all counts: ../output/0807-logcounts_allDEG_8ind23r_ToC.csv
@@ -34,6 +37,8 @@ stats <- read.csv("../output/0807-DEGstats_ToC_8ind23r.tab", sep="")
 head(stats)
 
 ```
+
+Prep to join them (could be skipped by using the join_by( a == b), but I already wrote this chunk so..
 
 ```{r}
 # make column with LOC names
@@ -51,6 +56,9 @@ stats$LOC <- LOCstat
 head(stats)
 
 ```
+
+Join them
+
 ```{r}
 # joining stats and counts
 DEG <- left_join(x = counts, y = stats, by = "LOC")
@@ -58,19 +66,15 @@ head(DEG)
 
 ```
 
+Read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks
+
 ```{r}
-# read in BLAST results
+# read in annotationg
 blast <- read.delim("../data/ncbi_dataset.tsv")
 head(blast)
 ```
 
-```{r}
-# make sure the column names are the same for the merge
-# not needed if you specify "by.x" and "by.y" in the merge function tho 
-
-# colnames(blast)[2] <- "LOC"
-# head(blast)
-```
+Joining annotation file to list of DEGs
 
 ```{r}
 # join by gene name
@@ -85,8 +89,29 @@ head(DEG_Blast)
 
 # write_delim(DEG_Blast, "../output/0826-DEG_blast_cds_full.tab")
 
+```
+
+the following chunk is me seeing if I could pull the SPID from the full blast output and add it to my annot DEG list. 12 SPID short after join.. not sure why
+
+```{r}
+
+# read in blast full results
+blastfull <- read.csv("../output/0821-rphil_blast_cds.tab", sep="")
+
+# select for just the protein id and the saccver / spid info 
+blastselect <- data.frame(protein = blastfull$protein_id, id = blastfull$saccver)
+
+# join to the deg blast list by matching the protein ids
+blastselect_deg <- left_join(DEG_Blast, blastselect, join_by("Protein.accession" == "protein") )
+
+# removing any duplicate LOC entries that were created during the join
+blast_id_deg <- distinct(blastselect_deg, LOC, .keep_all = TRUE)
 
 ```
+
+### following code chunks ignored currently (as of 8/27/25)
+
+### if using blast instead of annotated genome file : 
 
 ```{r}
 # make a short file of just the DEG names and other desired data
@@ -97,6 +122,8 @@ head(DEG_annot)
 
 
 ```
+
+retrieving uniprot IDs
 
 ```{r}
 # retrieve gene names for uniprot id lookup
@@ -114,16 +141,8 @@ write.table(blast$SPID, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt
 
 ```
 
+GO annotations
 
-
-
-
-
-
-
-
-
-skipped
 ```{r}
 
 # retrieved our unirpot id GO file from the web interface https://www.uniprot.org/
@@ -148,10 +167,3 @@ head(clam_GO_annotations)
 
 write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0514.csv")
 ```
-
-
-
-
-
-
-
