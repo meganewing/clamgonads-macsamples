@@ -68,8 +68,8 @@ head(blast)
 # make sure the column names are the same for the merge
 # not needed if you specify "by.x" and "by.y" in the merge function tho 
 
-colnames(blast)[2] <- "LOC"
-head(blast)
+# colnames(blast)[2] <- "LOC"
+# head(blast)
 ```
 
 ```{r}
@@ -83,7 +83,7 @@ head(DEG_Blast)
 DEG_Blast <- distinct(DEG_Blast, LOC, .keep_all = TRUE)
 head(DEG_Blast)
 
-write_delim(DEG_Blast, "../output/0826-DEG_blast_cds_full.tab")
+# write_delim(DEG_Blast, "../output/0826-DEG_blast_cds_full.tab")
 
 
 ```
