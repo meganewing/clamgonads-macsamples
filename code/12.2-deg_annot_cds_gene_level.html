@@ -819,15 +819,212 @@ DEG list. Still 12 SPID short after join. not sure why the discrepency
 is occuring.</p>
 <pre class="r"><code># read in blast full results
 blastfull &lt;- read.csv(&quot;../output/0821-rphil_blast_cds.tab&quot;, sep=&quot;&quot;)
-
-# select for just the protein id and the saccver / spid info 
+head(blastfull)</code></pre>
+<pre><code>##                                        cds         gene   ncbi_id
+## 1  lcl|NW_026851515.1_cds_XP_060561973.1_4 LOC132718660 132718660
+## 2  lcl|NW_026851515.1_cds_XP_060581950.1_6 LOC132738154 132738154
+## 3  lcl|NW_026851515.1_cds_XP_060582695.1_7 LOC132738154 132738154
+## 4  lcl|NW_026851515.1_cds_XP_060583779.1_8 LOC132739666 132739666
+## 5  lcl|NW_026851515.1_cds_XP_060579431.1_9 LOC132736035 132736035
+## 6 lcl|NW_026851516.1_cds_XP_060593541.1_10 LOC132747699 132747699
+##                                                protein     protein_id
+## 1                 uncharacterized protein K02A2.6-like XP_060561973.1
+## 2                    somatostatin receptor type 2-like XP_060581950.1
+## 3                    somatostatin receptor type 2-like XP_060582695.1
+## 4                    somatostatin receptor type 3-like XP_060583779.1
+## 5 piggyBac transposable element-derived protein 4-like XP_060579431.1
+## 6                 uncharacterized protein LOC132747699 XP_060593541.1
+##                                          location gbkey               saccver
+## 1                                  167380..168189   CDS  sp|Q09575|YRD6_CAEEL
+## 2                                  217993..219111   CDS  sp|O93603|TRHR_CHICK
+## 3                                  217993..219111   CDS  sp|O93603|TRHR_CHICK
+## 4                                  225974..227020   CDS  sp|O93603|TRHR_CHICK
+## 5 complement(join(234839..236314,236619..236786))   CDS sp|Q96DM1|PGBD4_HUMAN
+## 6                        complement(14337..16805)   CDS  sp|Q09575|YRD6_CAEEL
+##   pident length mismatch gapopen qstart qend sstart send   evalue bitscore
+## 1 27.451    204      123       9     16  588    900 1091 4.19e-08     57.8
+## 2 35.345    116       73       2    157  501     35  149 4.78e-07     55.1
+## 3 35.345    116       73       2    157  501     35  149 4.78e-07     55.1
+## 4 34.483    145       83       5    148  558     35  175 6.61e-09     60.5
+## 5 29.658    526      318      14    142 1623     75  580 2.49e-56    202.0
+## 6 29.098    244      159       5   1486 2214    775 1005 1.27e-25    117.0</code></pre>
+<pre class="r"><code># select for just the protein id and the saccver / spid info 
 blastselect &lt;- data.frame(protein = blastfull$protein_id, id = blastfull$saccver)
-
-# join to the deg blast list by matching the protein ids
+head(blastselect)</code></pre>
+<pre><code>##          protein                    id
+## 1 XP_060561973.1  sp|Q09575|YRD6_CAEEL
+## 2 XP_060581950.1  sp|O93603|TRHR_CHICK
+## 3 XP_060582695.1  sp|O93603|TRHR_CHICK
+## 4 XP_060583779.1  sp|O93603|TRHR_CHICK
+## 5 XP_060579431.1 sp|Q96DM1|PGBD4_HUMAN
+## 6 XP_060593541.1  sp|Q09575|YRD6_CAEEL</code></pre>
+<pre class="r"><code># join to the deg blast list by matching the protein ids
 blastselect_deg &lt;- left_join(DEG_Blast, blastselect, join_by(&quot;Protein.accession&quot; == &quot;protein&quot;) )
-
-# removing any duplicate LOC entries that were created during the join
-blast_id_deg &lt;- distinct(blastselect_deg, LOC, .keep_all = TRUE)</code></pre>
+head(blastselect_deg)</code></pre>
+<pre><code>##    M.C.193  M.C.216  M.C.218  M.C.226  M.C.306  M.C.329  M.C.334  M.C.337
+## 1 9.018234 8.991358 7.577010 7.789053 7.618000 7.903490 7.785037 8.362197
+## 2 7.546969 8.093778 8.444167 8.048840 9.286832 9.820501 7.614251 8.489700
+## 3 5.276290 6.314388 7.936010 7.727373 6.929499 8.016098 6.245973 6.409642
+## 4 5.276290 6.314388 7.936010 7.727373 6.929499 8.016098 6.245973 6.409642
+## 5 5.276290 6.314388 7.936010 7.727373 6.929499 8.016098 6.245973 6.409642
+## 6 5.789978 6.525297 5.486501 5.769676 6.385635 7.139049 6.165775 6.409642
+##    M.C.339  M.C.358  M.C.360  M.C.363  M.C.373  M.C.482  M.C.488   M.T.18
+## 1 8.102469 7.730976 7.431279 8.489877 6.870841 7.056003 7.866917 7.002917
+## 2 6.665863 7.782664 7.177897 8.498897 6.770201 8.030656 8.887287 6.953388
+## 3 5.553355 6.873344 7.109438 5.692989 7.077499 5.222981 6.724682 4.798929
+## 4 5.553355 6.873344 7.109438 5.692989 7.077499 5.222981 6.724682 4.798929
+## 5 5.553355 6.873344 7.109438 5.692989 7.077499 5.222981 6.724682 4.798929
+## 6 5.398225 7.458745 5.432316 6.991711 6.799679 5.763178 6.372353 4.325212
+##     M.T.20   M.T.22  M.T.235  M.T.245   M.T.29   M.T.31   M.T.32  M.T.399
+## 1 6.278039 6.744291 7.172415 6.699427 6.653879 7.674504 6.960515 6.236251
+## 2 5.858643 6.806725 7.443312 6.929311 6.682167 6.836827 6.504231 6.675271
+## 3 4.682751 5.706205 5.549657 5.462240 6.317607 5.470048 5.218768 5.602092
+## 4 4.682751 5.706205 5.549657 5.462240 6.317607 5.470048 5.218768 5.602092
+## 5 4.682751 5.706205 5.549657 5.462240 6.317607 5.470048 5.218768 5.602092
+## 6 4.101964 5.247309 5.513920 5.108990 5.487575 4.901269 5.370087 5.188391
+##     M.T.43   M.T.44  M.T.500    M.T.7   M.T.83    M.T.8          LOC  baseMean
+## 1 6.410440 6.419648 6.607779 7.169018 6.848184 7.134442 LOC132758254 187.73392
+## 2 7.866451 6.984149 7.760471 6.843521 7.864893 5.499278 LOC132745822 225.66028
+## 3 6.129826 5.613907 6.159865 5.885884 4.885269 4.420540 LOC132746399  80.87262
+## 4 6.129826 5.613907 6.159865 5.885884 4.885269 4.420540 LOC132746399  80.87262
+## 5 6.129826 5.613907 6.159865 5.885884 4.885269 4.420540 LOC132746399  80.87262
+## 6 5.218074 5.850376 6.092670 4.609669 5.927677 4.633276 LOC132746792  60.55140
+##   log2FoldChange     lfcSE      stat       pvalue         padj      Accession
+## 1      -1.188610 0.2003729 -5.931989 2.992873e-09 3.395415e-05 NW_026859905.1
+## 2      -1.299604 0.2742359 -4.738998 2.147771e-06 3.929306e-03 NW_026856216.1
+## 3      -1.324071 0.2742349 -4.828235 1.377486e-06 3.929306e-03 NW_026856403.1
+## 4      -1.324071 0.2742349 -4.828235 1.377486e-06 3.929306e-03 NW_026856403.1
+## 5      -1.324071 0.2742349 -4.828235 1.377486e-06 3.929306e-03 NW_026856403.1
+## 6      -1.141412 0.2388462 -4.778857 1.762949e-06 3.929306e-03 NW_026856504.1
+##    Begin    End Chromosome Orientation
+## 1 204763 227007                   plus
+## 2  29641  46037                  minus
+## 3 242141 268014                   plus
+## 4 242141 268014                   plus
+## 5 242141 268014                   plus
+## 6  70333 123083                   plus
+##                                                    Name   Gene.ID
+## 1                      golgin subfamily A member 3-like 132758254
+## 2                                         titin homolog 132745822
+## 3 FYVE and coiled-coil domain-containing protein 1-like 132746399
+## 4 FYVE and coiled-coil domain-containing protein 1-like 132746399
+## 5 FYVE and coiled-coil domain-containing protein 1-like 132746399
+## 6                                 phospholipase D1-like 132746792
+##        Gene.Type Transcripts.accession
+## 1 protein-coding        XM_060749812.1
+## 2 protein-coding        XM_060734808.1
+## 3 protein-coding        XM_060735521.1
+## 4 protein-coding        XM_060735521.1
+## 5 protein-coding        XM_060735521.1
+## 6 protein-coding        XM_060736043.1
+##                                           Transcript.name Protein.accession
+## 1 golgin subfamily A member 3-like, transcript variant X1    XP_060605795.1
+## 2                    titin homolog, transcript variant X1    XP_060590791.1
+## 3   FYVE and coiled-coil domain-containing protein 1-like    XP_060591504.1
+## 4   FYVE and coiled-coil domain-containing protein 1-like    XP_060591504.1
+## 5   FYVE and coiled-coil domain-containing protein 1-like    XP_060591504.1
+## 6                                   phospholipase D1-like    XP_060592026.1
+##                                            Protein.name Protein.length
+## 1           golgin subfamily A member 3-like isoform X1           1674
+## 2                              titin homolog isoform X1           1350
+## 3 FYVE and coiled-coil domain-containing protein 1-like           2583
+## 4 FYVE and coiled-coil domain-containing protein 1-like           2583
+## 5 FYVE and coiled-coil domain-containing protein 1-like           2583
+## 6                                 phospholipase D1-like            330
+##   Locus.tag                    id
+## 1           sp|P55937|GOGA3_MOUSE
+## 2                            &lt;NA&gt;
+## 3           sp|Q8VDC1|FYCO1_MOUSE
+## 4           sp|Q8VDC1|FYCO1_MOUSE
+## 5           sp|Q8VDC1|FYCO1_MOUSE
+## 6            sp|Q9Z280|PLD1_MOUSE</code></pre>
+<pre class="r"><code># removing any duplicate LOC entries that were created during the join
+blast_id_deg &lt;- distinct(blastselect_deg, LOC, .keep_all = TRUE)
+head(blast_id_deg)</code></pre>
+<pre><code>##    M.C.193  M.C.216  M.C.218  M.C.226  M.C.306  M.C.329  M.C.334  M.C.337
+## 1 9.018234 8.991358 7.577010 7.789053 7.618000 7.903490 7.785037 8.362197
+## 2 7.546969 8.093778 8.444167 8.048840 9.286832 9.820501 7.614251 8.489700
+## 3 5.276290 6.314388 7.936010 7.727373 6.929499 8.016098 6.245973 6.409642
+## 4 5.789978 6.525297 5.486501 5.769676 6.385635 7.139049 6.165775 6.409642
+## 5 5.407278 3.874463 3.474487 4.185148 3.179462 4.353156 4.736047 5.329371
+## 6 7.031642 7.395884 6.558978 7.200879 6.139855 5.858405 5.528054 6.074927
+##    M.C.339  M.C.358  M.C.360  M.C.363  M.C.373  M.C.482  M.C.488   M.T.18
+## 1 8.102469 7.730976 7.431279 8.489877 6.870841 7.056003 7.866917 7.002917
+## 2 6.665863 7.782664 7.177897 8.498897 6.770201 8.030656 8.887287 6.953388
+## 3 5.553355 6.873344 7.109438 5.692989 7.077499 5.222981 6.724682 4.798929
+## 4 5.398225 7.458745 5.432316 6.991711 6.799679 5.763178 6.372353 4.325212
+## 5 3.402581 3.944095 4.941024 3.968640 4.973514 4.657204 5.076312 5.817759
+## 6 6.692819 6.392831 6.916854 5.924841 6.473688 6.463304 5.981913 5.119464
+##     M.T.20   M.T.22  M.T.235  M.T.245   M.T.29   M.T.31   M.T.32  M.T.399
+## 1 6.278039 6.744291 7.172415 6.699427 6.653879 7.674504 6.960515 6.236251
+## 2 5.858643 6.806725 7.443312 6.929311 6.682167 6.836827 6.504231 6.675271
+## 3 4.682751 5.706205 5.549657 5.462240 6.317607 5.470048 5.218768 5.602092
+## 4 4.101964 5.247309 5.513920 5.108990 5.487575 4.901269 5.370087 5.188391
+## 5 6.399378 6.957439 4.356273 4.640188 5.281139 6.237069 4.898547 6.252709
+## 6 4.101964 5.095524 6.653936 5.296400 3.455454 4.789809 5.049696 4.324042
+##     M.T.43   M.T.44  M.T.500    M.T.7   M.T.83    M.T.8          LOC  baseMean
+## 1 6.410440 6.419648 6.607779 7.169018 6.848184 7.134442 LOC132758254 187.73392
+## 2 7.866451 6.984149 7.760471 6.843521 7.864893 5.499278 LOC132745822 225.66028
+## 3 6.129826 5.613907 6.159865 5.885884 4.885269 4.420540 LOC132746399  80.87262
+## 4 5.218074 5.850376 6.092670 4.609669 5.927677 4.633276 LOC132746792  60.55140
+## 5 7.016638 7.447696 5.158157 4.870806 6.186756 4.565791 LOC132720785  43.73189
+## 6 4.892587 5.200124 5.506812 4.561152 6.689869 4.982870 LOC132725056  65.01466
+##   log2FoldChange     lfcSE      stat       pvalue         padj      Accession
+## 1      -1.188610 0.2003729 -5.931989 2.992873e-09 3.395415e-05 NW_026859905.1
+## 2      -1.299604 0.2742359 -4.738998 2.147771e-06 3.929306e-03 NW_026856216.1
+## 3      -1.324071 0.2742349 -4.828235 1.377486e-06 3.929306e-03 NW_026856403.1
+## 4      -1.141412 0.2388462 -4.778857 1.762949e-06 3.929306e-03 NW_026856504.1
+## 5       1.570396 0.3214278  4.885689 1.030675e-06 3.929306e-03 NW_026862958.1
+## 6      -1.269575 0.2692982 -4.714384 2.424428e-06 3.929306e-03 NW_026864281.1
+##    Begin    End Chromosome Orientation
+## 1 204763 227007                   plus
+## 2  29641  46037                  minus
+## 3 242141 268014                   plus
+## 4  70333 123083                   plus
+## 5  82977 120119                   plus
+## 6 197176 248330                  minus
+##                                                          Name   Gene.ID
+## 1                            golgin subfamily A member 3-like 132758254
+## 2                                               titin homolog 132745822
+## 3       FYVE and coiled-coil domain-containing protein 1-like 132746399
+## 4                                       phospholipase D1-like 132746792
+## 5 malignant fibrous histiocytoma-amplified sequence 1 homolog 132720785
+## 6                      serine-rich adhesin for platelets-like 132725056
+##        Gene.Type Transcripts.accession
+## 1 protein-coding        XM_060749812.1
+## 2 protein-coding        XM_060734808.1
+## 3 protein-coding        XM_060735521.1
+## 4 protein-coding        XM_060736043.1
+## 5 protein-coding        XM_060704992.1
+## 6 protein-coding        XM_060710048.1
+##                                                                      Transcript.name
+## 1                            golgin subfamily A member 3-like, transcript variant X1
+## 2                                               titin homolog, transcript variant X1
+## 3                              FYVE and coiled-coil domain-containing protein 1-like
+## 4                                                              phospholipase D1-like
+## 5 malignant fibrous histiocytoma-amplified sequence 1 homolog, transcript variant X1
+## 6                      serine-rich adhesin for platelets-like, transcript variant X1
+##   Protein.accession
+## 1    XP_060605795.1
+## 2    XP_060590791.1
+## 3    XP_060591504.1
+## 4    XP_060592026.1
+## 5    XP_060560975.1
+## 6    XP_060566031.1
+##                                                             Protein.name
+## 1                            golgin subfamily A member 3-like isoform X1
+## 2                                               titin homolog isoform X1
+## 3                  FYVE and coiled-coil domain-containing protein 1-like
+## 4                                                  phospholipase D1-like
+## 5 malignant fibrous histiocytoma-amplified sequence 1 homolog isoform X1
+## 6                      serine-rich adhesin for platelets-like isoform X1
+##   Protein.length Locus.tag                    id
+## 1           1674           sp|P55937|GOGA3_MOUSE
+## 2           1350                            &lt;NA&gt;
+## 3           2583           sp|Q8VDC1|FYCO1_MOUSE
+## 4            330            sp|Q9Z280|PLD1_MOUSE
+## 5           1231           sp|Q9Y4C4|MFHA1_HUMAN
+## 6           2552           sp|E9Q3S4|M3K19_MOUSE</code></pre>
 </div>
 <div id="following-code-chunks-ignored-currently-as-of-82725" class="section level2">
 <h2>following code chunks ignored currently (as of 8/27/25)</h2>

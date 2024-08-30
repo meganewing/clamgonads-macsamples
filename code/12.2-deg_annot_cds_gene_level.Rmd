@@ -115,15 +115,19 @@ I tried to trouble shoot this with the following chunk to see if I could pull th
 
 # read in blast full results
 blastfull <- read.csv("../output/0821-rphil_blast_cds.tab", sep="")
+head(blastfull)
 
 # select for just the protein id and the saccver / spid info 
 blastselect <- data.frame(protein = blastfull$protein_id, id = blastfull$saccver)
+head(blastselect)
 
 # join to the deg blast list by matching the protein ids
 blastselect_deg <- left_join(DEG_Blast, blastselect, join_by("Protein.accession" == "protein") )
+head(blastselect_deg)
 
 # removing any duplicate LOC entries that were created during the join
 blast_id_deg <- distinct(blastselect_deg, LOC, .keep_all = TRUE)
+head(blast_id_deg)
 
 ```
 
