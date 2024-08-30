@@ -1,0 +1,71 @@
+---
+title: "Gene annotation"
+author: "Steven Roberts"
+date: "`r format(Sys.time(), '%d %B, %Y')`"  
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    html_preview: true
+  html_document:
+    theme: readable
+    highlight: zenburn
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    code_download: true
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(DT)
+library(Biostrings)
+library(tm)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  fig.width = 6,       # Set plot width in inches
+  fig.height = 4,      # Set plot height in inches
+  fig.align = "center", # Align plots to the center
+  comment = ""         # Prevents appending '##' to beginning of lines in code output
+)
+```
+
+## Summary
+Here I will try to annotate the Manila clam genes. I know NCBI has annoation and I will also blast to SP to get GO information.
+
+
+# What does NCBI have?
+
+![](http://gannet.fish.washington.edu/seashell/snaps/2024-08-30_13-59-11.png)
+<https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026571515.1/>
+
+
+Grabbing the code clicking on 'datasets' button in screenshot
+
+```{r, engine='bash'}
+cd ../data
+
+/home/shared/datasets \
+download genome accession GCF_026571515.1 --include gff3,rna,cds,protein,genome,seq-report
+```
+
+```{r, engine='bash'}
+cd ../data
+unzip ncbi_dataset.zip
+
+```
+
+```{r, engine='bash', eval = TRUE}
+head /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/*
+```
+
