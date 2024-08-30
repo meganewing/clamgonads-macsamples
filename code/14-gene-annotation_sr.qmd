@@ -46,7 +46,26 @@ Here I will try to annotate the Manila clam genes. I know NCBI has annoation and
 
 # What does NCBI have?
 
+![](http://gannet.fish.washington.edu/seashell/snaps/2024-08-30_13-59-11.png)
+<https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026571515.1/>
 
 
+Grabbing the code clicking on 'datasets' button in screenshot
 
+```{r, engine='bash'}
+cd ../data
+
+/home/shared/datasets \
+download genome accession GCF_026571515.1 --include gff3,rna,cds,protein,genome,seq-report
+```
+
+```{r, engine='bash'}
+cd ../data
+unzip ncbi_dataset.zip
+
+```
+
+```{r, engine='bash', eval = TRUE}
+head /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/*
+```
 

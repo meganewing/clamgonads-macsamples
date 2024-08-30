@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -76,7 +110,101 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>Here I will try to annotate the Manila clam genes. I know NCBI has annoation and I will also blast to SP to get GO information.</p>
+</section>
+<section id="what-does-ncbi-have" class="level1">
+<h1>What does NCBI have?</h1>
+<p><img src="http://gannet.fish.washington.edu/seashell/snaps/2024-08-30_13-59-11.png" class="img-fluid"> <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026571515.1/" class="uri">https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_026571515.1/</a></p>
+<p>Grabbing the code clicking on ‘datasets’ button in screenshot</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/shared/datasets</span> <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>download genome accession GCF_026571515.1 <span class="at">--include</span> gff3,rna,cds,protein,genome,seq-report</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../data</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unzip</span> ncbi_dataset.zip</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/<span class="pp">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna &lt;==
+&gt;lcl|NW_026851514.1_cds_XP_060579799.1_1 [gene=LOC132712676] [db_xref=GeneID:132712676] [protein=uncharacterized protein LOC132712676] [protein_id=XP_060579799.1] [location=complement(join(8570..8679,9698..9800,9934..10108,10375..10520,10828..10970,11352..11870,12239..12377,12599..12643))] [gbkey=CDS]
+ATGGATAATCCATGTTCGTATGAATCAGTTAAAAGAGTTATCAAAGAAATACGAAAAACTAGCGGAGTGACAGAAGATAA
+CTTAAAAACATGGTGTATTATGGGATGCGACGGCCTTCCCTATACGCTAGGATCGAGACTAATTGAAAAAAATAAAGATA
+TGCAAAATATCTTACTTATTCCCGGACACGGGCACATAGAGATGAATGTGGTAAAAGCTGCTTTTAAGTTACTGTGGGAG
+CCCATTCTACAGGACTTAAGTAAGGAATGTGGTTTCAAGTCACCAAGGGCACAAGTTGCGGCACAATCGTGTACTGATCA
+CCACAAATCATACATGCTTTTGGAAATAATGTTTGAAAGTGCTTTGCAGGAGATCATGACAACTTTTATCATAAATAGTG
+TGCAGAATTCAATAACACCTAACATAGCCACTTTTTTTGATTATATAAAATCTTCAAAAGACAAAAATTATAGATTTATG
+TGTGACGCAATAATAAACTTTATTTTTCCAATATTTCTATATAGAGCCGGTGTTAGGAGAAACAATTTCGGATATATATC
+TGCAGCTAAAGCTAAATTTTTTAAACTATTTTTTTCTGGCGGAATGAAAAATTATCAGCAACTTATTATGAAAGATATTA
+AAACATACATCCTAGCACCTCCAGAAGTGAAGCATTTCTTACAGAAAACCCAATCTTTTACTGTCAGTGGACACCCTTCA
 
+==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/GCF_026571515.1_ASM2657151v2_genomic.fna &lt;==
+&gt;NW_026851514.1 Ruditapes philippinarum isolate M1 unplaced genomic scaffold, ASM2657151v2 ctg11145_1_1_1_1, whole genome shotgun sequence
+AAAAAaacgttcttttttttttttttcaaataaacattaatcacttcagcgcgcgcgcaattatcgttttcaaattaaag
+tttcgtaagatatgttaatgacttcccgatgcgatcgactgtaagtaatttgtatatgtatgcggttttttggggttttt
+tttttgtttgttttttaattaaagcttcttattctttaatattttttatgtatctcataatctgtattgaaaatttgaat
+tttattacacatggactattcaaattatgatgcgttgccctagaattgaataaactttcttaattacacaatacggggtc
+atactgatctttgcgtctttctctgaaataattatttccttgttaaaacatatttggaccacatatttctgtcaattgtt
+cactttacttccgatttttgttgctacggaaacacatgtttctatttgtgttttctaatcaattcgaatctataatcagt
+ttaatgggatcaccaccgggtaaaacgactactaggtactttggtcatgtttttaccccaaatatttgaatgtctctatt
+gggattaaaatgagcatagttaactaaacaactggttgtataaatccctgacctgtctaattctaattatgagattagtg
+aatatataagactttcactacaaaatattcctaaacaaaagagcacatgtttaaatttattcctatacaaataaaagatc
+
+==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/genomic.gff &lt;==
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+#!genome-build ASM2657151v2
+#!genome-build-accession NCBI_Assembly:GCF_026571515.1
+#!annotation-date 10/30/2023
+#!annotation-source NCBI RefSeq GCF_026571515.1-RS_2023_10
+##sequence-region NW_026851514.1 1 38808
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=129788
+NW_026851514.1  RefSeq  region  1   38808   .   +   .   ID=NW_026851514.1:1..38808;Dbxref=taxon:129788;Name=Unknown;chromosome=Unknown;collection-date=2014-10;country=USA: Puget Sound region%2C Pacific Northwest;dev-stage=adult clam;gbkey=Src;genome=genomic;isolate=M1;isolation-source=lagoon;mol_type=genomic DNA;sex=male;tissue-type=mantle
+
+==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/protein.faa &lt;==
+&gt;XP_060551064.1 uncharacterized protein LOC132760673 [Ruditapes philippinarum]
+MPKRKPSASTSGKGKATTSSTSDDHRLASIIANALVQNKSALKEVAALLPPMTIEPGIRPDGTEAELTEPDHAVQKQPRL
+GNRGFGTGSSPKQGPCTNSTRNVTMDIAHVKKSLLHSSLAPGTHKAYDRFWERFLCFVSTSVVHFSPLPATPDCISDFVA
+HLHILAFAPSSISSHLSAISHFHNISGFTDPCENFITRKMLVGCRKINLRSDTRKPLLNNHIQLLCQAVKEMFAHVPYLK
+YLYMALILTAFNGFFRLGELLPATISSADKVVQITDLSSSSKSVRLKLLNHKTNKSDKPTLILMKSLQTNCPVKALNNYL
+SMRGQSAGPLFLLANNSPLTLPSFREVFKLLLRLANLSPVHYKLHSFRIGACTQAILSGTPENEVMRMGRWKSNAFKRYI
+RMPVVNATH
+&gt;XP_060551065.1 transmembrane cell adhesion receptor mua-3-like isoform X1 [Ruditapes philippinarum]
+MGIPGIMRHAYIAILLMNLVLRGGSVTDICQTATADIVFIVDSSGSVGSSGYDDEIDFIKAIVNELVIDPNEVRMGLIDY
+STSVHTSLGFNLNDPNFDTNAEVIAKLNSLPYSGGSTRTDLAIQAAKNMFSGPGNRPDVPDVLFTLTDGETNDGGQDLLD
+
+==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/rna.fna &lt;==
+&gt;XM_060695081.1 PREDICTED: Ruditapes philippinarum uncharacterized LOC132760673 (LOC132760673), mRNA
+TAGCTTTATTTAGTGAAACATATAAAGATGTTTATATTTGTAAACTTATTATCATTGCTTACTCTAAGAGATTGGAGGAG
+GAAGGGCCAGGATTTTCGGTTATATGAACTTTCCGGAAATTGTTAACCATTTCGGTTTTCTAGATGAGCCTCGCTTTGAA
+AAGCGTCACTTTCGGACCACAGACTTAGTCATTTCAGAGAAGTTTGCTGTCACTTTGAATTGTTGAACAAAAATCAGTGC
+ATAGATTGACATATTTTGAATTGTATGTGTTGAGTGATATTTTCTACATTGCCGGACGAGCTTCCACTATTTACAATGCC
+AAAAAGAAAACCCTCCGCGTCTACCAGTGGTAAAGGCAAGGCAACAACATCATCCACTAGCGACGACCACAGGTTGGCGA
+GCATCATCGCCAATGCTTTAGTGCAGAATAAGTCTGCACTGAAGGAAGTAGCCGCCTTATTACCACCAATGACGATAGAA
+CCAGGCATCCGCCCCGACGGTACAGAGGCGGAATTAACAGAACCGGATCATGCCGTCCAAAAGCAGCCGCGGCTGGGTAA
+CAGAGGCTTTGGAACTGGCTCCTCACCTAAACAGGGACCCTGTACCAATTCCACGAGAAATGTCACCATGGATATTGCTC
+ACGTGAAGAAGTCCTTGTTGCATTCTTCTCTGGCTCCGGGAACCCATAAAGCTTACGATCGGTTTTGGGAACGGTTTCTA
+
+==&gt; /home/shared/8TB_HDD_03/sr320/github/clamgonads-macsamples/data/ncbi_dataset/data/GCF_026571515.1/sequence_report.jsonl &lt;==
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000001.1","length":38808,"refseqAccession":"NW_026851514.1","role":"unplaced-scaffold","sequenceName":"ctg11145_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000002.1","length":239892,"refseqAccession":"NW_026851515.1","role":"unplaced-scaffold","sequenceName":"ctg3581_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000003.1","length":379583,"refseqAccession":"NW_026851516.1","role":"unplaced-scaffold","sequenceName":"ctg1911_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000004.1","length":285079,"refseqAccession":"NW_026851517.1","role":"unplaced-scaffold","sequenceName":"ctg1746_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000005.1","length":344284,"refseqAccession":"NW_026851518.1","role":"unplaced-scaffold","sequenceName":"ctg1952_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000006.1","length":15851,"refseqAccession":"NW_026851519.1","role":"unplaced-scaffold","sequenceName":"ctg18844_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000007.1","length":57002,"refseqAccession":"NW_026851520.1","role":"unplaced-scaffold","sequenceName":"ctg7485_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000008.1","length":134014,"refseqAccession":"NW_026851521.1","role":"unplaced-scaffold","sequenceName":"ctg10092_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000009.1","length":35506,"refseqAccession":"NW_026851522.1","role":"unplaced-scaffold","sequenceName":"ctg9815_1_1_1_1"}
+{"assemblyAccession":"GCF_026571515.1","assemblyUnit":"Primary Assembly","assignedMoleculeLocationType":"Chromosome","chrName":"Un","genbankAccession":"JAKTTH010000010.1","length":49325,"refseqAccession":"NW_026851523.1","role":"unplaced-scaffold","sequenceName":"ctg6631_1_1_1_1"}</code></pre>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->
