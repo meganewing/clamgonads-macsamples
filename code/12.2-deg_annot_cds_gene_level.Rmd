@@ -76,7 +76,7 @@ head(DEG)
 
 ### Adding Annotation Info
 
-Read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks.
+I want to get associated gene info for the DEGs. To do this, I read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks.
 Since R.Phil has a published annotation, we are using that to get info about our DEGs.
 
 It is important to note that I originally used a blast file but switched because not all of the genes were getting a hit. These genes, however, when searched for on the annotated genome for rphil, did have matches. So I switched to the published annotation file.

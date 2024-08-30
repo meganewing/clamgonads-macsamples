@@ -407,13 +407,34 @@ library(tidyverse)</code></pre>
 ## 
 ##     cat, commandArgs, getOption, isOpen, nullfile, parse, warnings</code></pre>
 <pre class="r"><code>library(dplyr)</code></pre>
-<div id="gene-level-with-deseq2-pre-filtering-10reads-avg-of-3samples" class="section level1">
-<h1>Gene level with deseq2 pre filtering (10+reads avg of
-3+samples)</h1>
-<div id="annotating-our-top-degs-using-blast-and-uniprot-gene-ontology-go-ids" class="section level2">
-<h2>Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO)
-ids</h2>
-<p>Read in DEG count and stats files</p>
+<div id="gene-level-with-deseq2-pre-filtering-23read-individuals-of-8samples-per-treatment" class="section level2">
+<h2>Gene level with deseq2 pre filtering (23+read individuals of
+8+samples, per treatment)</h2>
+</div>
+<div id="annotating-our-top-degs-using-blast-and-uniprot-gene-ontology-go-ids" class="section level1">
+<h1>Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO)
+ids</h1>
+<div id="background" class="section level3">
+<h3>background</h3>
+<p>The DEG list, stats, and counts, come from the deseq2 output with an
+padj &gt; 0.05. Genes were pre filtered before deseq2 those that met the
+parameter of showing at least 8 individuals (over half) from each
+treatment (control n = 15, treatment n = 15) had 23 (median read count,
+after exluding all 0 values) reads. This was to limit outlier
+individuals in the data and get a padj that was more reflective of the
+actual differences is expression across treatments.</p>
+</div>
+<div id="combining-deg-count-and-stats-files" class="section level3">
+<h3>Combining DEG count and stats files</h3>
+<p>While counts aren’t needed for this, I chose to add it to the DEG
+matrix I’m creating so I could have a data frame that had all relevant
+data for the DEG. This is also to help minimize the number of
+dataframes/files to keep track of, as all of the DEG info is store in
+one. If I want a more select dataframe later on, I can create it. This
+reasoning is perhaps best compared to when folks create a “laundry list
+CV” that includes everything, then they create smaller CVs for each
+individual job. Could skip this step if you wanted to and just proceed
+with stats, or even just a list of the DEG names.</p>
 <pre class="r"><code># for all counts: ../output/0807-logcounts_allDEG_8ind23r_ToC.csv
 # for DEG stats: ../output/0807-DEGstats_ToC_8ind23r.tab
 
@@ -472,8 +493,9 @@ head(stats)</code></pre>
 ## LOC132728236 0.031379420
 ## LOC132740341 0.031379420
 ## LOC132741452 0.007098218</code></pre>
-<p>Prep to join them (could be skipped by using the join_by( a == b),
-but I already wrote this chunk so..</p>
+<p>The next step to creating our ’DEG masterfile is prep to join them
+(could be skipped by using the join_by( a == b) in the actual joining
+step, but I already wrote this chunk so..</p>
 <pre class="r"><code># make column with LOC names
 
 LOCnames &lt;- rownames(counts)
@@ -535,7 +557,7 @@ head(stats)</code></pre>
 ## LOC132728236 0.031379420 LOC132728236
 ## LOC132740341 0.031379420 LOC132740341
 ## LOC132741452 0.007098218 LOC132741452</code></pre>
-<p>Join them</p>
+<p>Finally join them</p>
 <pre class="r"><code># joining stats and counts
 DEG &lt;- left_join(x = counts, y = stats, by = &quot;LOC&quot;)
 head(DEG)</code></pre>
@@ -574,9 +596,21 @@ head(DEG)</code></pre>
 ## 4      -1.141412 0.2388462 -4.778857 1.762949e-06 3.929306e-03
 ## 5       1.570396 0.3214278  4.885689 1.030675e-06 3.929306e-03
 ## 6      -1.269575 0.2692982 -4.714384 2.424428e-06 3.929306e-03</code></pre>
-<p>Read in <a href="https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/">annotated
+</div>
+<div id="adding-annotation-info" class="section level3">
+<h3>Adding Annotation Info</h3>
+<p>I want to get associated gene info for the DEGs. To do this, I read
+in <a href="https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/">annotated
 genome file</a>. Its named blast here because originally it was a blast
-file, but I didn’t want to go and edit all the following chunks</p>
+file, but I didn’t want to go and edit all the following chunks. Since
+R.Phil has a published annotation, we are using that to get info about
+our DEGs.</p>
+<p>It is important to note that I originally used a blast file but
+switched because not all of the genes were getting a hit. These genes,
+however, when searched for on the annotated genome for rphil, did have
+matches. So I switched to the published annotation file.</p>
+<p>The goal is to eventually get some biological process information
+about or DEGs.</p>
 <pre class="r"><code># read in annotationg
 blast &lt;- read.delim(&quot;../data/ncbi_dataset.tsv&quot;)
 head(blast)</code></pre>
@@ -601,7 +635,11 @@ head(blast)</code></pre>
 ## 4                                                               NA BJM09_gr02
 ## 5    YP_009305273.1    NADH dehydrogenase subunit 4            452 BJM09_gp12
 ## 6                                                               NA BJM09_gt02</code></pre>
-<p>Joining annotation file to list of DEGs</p>
+<p>Joining annotation file to list of DEGs. Again, this is to keep
+building our “master list” of DEG info. A smaller dataframe/file could
+be created with select data if needed – this step is further down in
+this .rmd , currently commented out until GO terms can be added to the
+master list.</p>
 <pre class="r"><code># join by gene name
 
 DEG_Blast &lt;- left_join(x = DEG, y = blast, join_by(&quot;LOC&quot; == &quot;Symbol&quot;))
@@ -683,7 +721,7 @@ head(DEG_Blast)</code></pre>
 ## 4          
 ## 5          
 ## 6</code></pre>
-<pre class="r"><code># there&#39;s multiple entries for each LOC because of different isoforms, but we want just the gene level, so we are going to remove duplicates
+<pre class="r"><code># there&#39;s multiple entries for each LOC because of different isoforms, but we want just the gene level as our reads weren&#39;t thorough enough to give us confident information about isoforms, so we are going to remove duplicates 
 
 DEG_Blast &lt;- distinct(DEG_Blast, LOC, .keep_all = TRUE)
 head(DEG_Blast)</code></pre>
@@ -772,9 +810,13 @@ head(DEG_Blast)</code></pre>
 ## 5           1231          
 ## 6           2552</code></pre>
 <pre class="r"><code># write_delim(DEG_Blast, &quot;../output/0826-DEG_blast_cds_full.tab&quot;)</code></pre>
-<p>the following chunk is me seeing if I could pull the SPID from the
-full blast output and add it to my annot DEG list. 12 SPID short after
-join.. not sure why</p>
+<p>After joining the annotation to the DEGs, I still don’t have
+something I can take to UniProt to get GO terms with, which is necessary
+to get to my end goal of having biological proccess information.</p>
+<p>I tried to trouble shoot this with the following chunk to see if I
+could pull the SPID from the full blast output and add it to my annot
+DEG list. Still 12 SPID short after join. not sure why the discrepency
+is occuring.</p>
 <pre class="r"><code># read in blast full results
 blastfull &lt;- read.csv(&quot;../output/0821-rphil_blast_cds.tab&quot;, sep=&quot;&quot;)
 
@@ -786,11 +828,15 @@ blastselect_deg &lt;- left_join(DEG_Blast, blastselect, join_by(&quot;Protein.ac
 
 # removing any duplicate LOC entries that were created during the join
 blast_id_deg &lt;- distinct(blastselect_deg, LOC, .keep_all = TRUE)</code></pre>
-<div id="following-code-chunks-ignored-currently-as-of-82725" class="section level3">
-<h3>following code chunks ignored currently (as of 8/27/25)</h3>
 </div>
-<div id="if-using-blast-instead-of-annotated-genome-file" class="section level3">
-<h3>if using blast instead of annotated genome file :</h3>
+<div id="following-code-chunks-ignored-currently-as-of-82725" class="section level2">
+<h2>following code chunks ignored currently (as of 8/27/25)</h2>
+<p>Ignored because they are the steps once SPID information is
+obtained.</p>
+<div id="creating-smaller-dataframe-from-master" class="section level3">
+<h3>creating smaller dataframe from master:</h3>
+<p>Creating more select dataframe from master list. This one needs to be
+updated – ignore for now</p>
 <pre class="r"><code># make a short file of just the DEG names and other desired data
 
 # DEG_annot &lt;- data.frame( LOC = DEG_Blast$LOC, geneName = DEG_Blast$SPID, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj, protein = DEG_Blast$protein, cds = DEG_Blast$cds  )
