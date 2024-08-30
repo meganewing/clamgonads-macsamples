@@ -2,7 +2,9 @@
 title: "12-deg_annot_from_hisat"
 author: "Megan Ewing"
 date: "2024-05-13"
-output: html_document
+output:
+  html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -18,11 +20,17 @@ library(dplyr)
 
 ```
 
-# Gene level with deseq2 pre filtering (10+reads avg of 3+samples)
+## Gene level with deseq2 pre filtering (23+read individuals of 8+samples, per treatment)
 
-## Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
+# Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
 
-Read in DEG count and stats files
+### background
+The DEG list, stats, and counts, come from the deseq2 output with an padj > 0.05. Genes were pre filtered before deseq2 those that met the parameter of showing at least 8 individuals (over half) from each treatment (control n = 15, treatment n = 15) had 23 (median read count, after exluding all 0 values) reads. This was to limit outlier individuals in the data and get a padj that was more reflective of the actual differences is expression across treatments.
+
+### Combining DEG count and stats files
+While counts aren't needed for this, I chose to add it to the DEG matrix I'm creating so I could have a data frame that had all relevant data for the DEG. This is also to help minimize the number of dataframes/files to keep track of, as all of the DEG info is store in one. If I want a more select dataframe later on, I can create it.
+This reasoning is perhaps best compared to when folks create a "laundry list CV" that includes everything, then they create smaller CVs for each individual job.
+Could skip this step if you wanted to and just proceed with stats, or even just a list of the DEG names.
 
 ```{r}
 # for all counts: ../output/0807-logcounts_allDEG_8ind23r_ToC.csv
@@ -38,7 +46,7 @@ head(stats)
 
 ```
 
-Prep to join them (could be skipped by using the join_by( a == b), but I already wrote this chunk so..
+The next step to creating our 'DEG masterfile is prep to join them (could be skipped by using the join_by( a == b) in the actual joining step, but I already wrote this chunk so..
 
 ```{r}
 # make column with LOC names
@@ -57,7 +65,7 @@ head(stats)
 
 ```
 
-Join them
+Finally join them
 
 ```{r}
 # joining stats and counts
@@ -66,7 +74,14 @@ head(DEG)
 
 ```
 
-Read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks
+### Adding Annotation Info
+
+Read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks.
+Since R.Phil has a published annotation, we are using that to get info about our DEGs.
+
+It is important to note that I originally used a blast file but switched because not all of the genes were getting a hit. These genes, however, when searched for on the annotated genome for rphil, did have matches. So I switched to the published annotation file.
+
+The goal is to eventually get some biological process information about or DEGs.
 
 ```{r}
 # read in annotationg
@@ -74,7 +89,8 @@ blast <- read.delim("../data/ncbi_dataset.tsv")
 head(blast)
 ```
 
-Joining annotation file to list of DEGs
+Joining annotation file to list of DEGs. Again, this is to keep building our "master list" of DEG info.
+A smaller dataframe/file could be created with select data if needed -- this step is further down in this .rmd , currently commented out until GO terms can be added to the master list. 
 
 ```{r}
 # join by gene name
@@ -82,7 +98,7 @@ Joining annotation file to list of DEGs
 DEG_Blast <- left_join(x = DEG, y = blast, join_by("LOC" == "Symbol"))
 head(DEG_Blast)
 
-# there's multiple entries for each LOC because of different isoforms, but we want just the gene level, so we are going to remove duplicates
+# there's multiple entries for each LOC because of different isoforms, but we want just the gene level as our reads weren't thorough enough to give us confident information about isoforms, so we are going to remove duplicates 
 
 DEG_Blast <- distinct(DEG_Blast, LOC, .keep_all = TRUE)
 head(DEG_Blast)
@@ -91,7 +107,9 @@ head(DEG_Blast)
 
 ```
 
-the following chunk is me seeing if I could pull the SPID from the full blast output and add it to my annot DEG list. 12 SPID short after join.. not sure why
+After joining the annotation to the DEGs, I still don't have something I can take to UniProt to get GO terms with, which is necessary to get to my end goal of having biological proccess information.
+
+I tried to trouble shoot this with the following chunk to see if I could pull the SPID from the full blast output and add it to my annot DEG list. Still 12 SPID short after join. not sure why the discrepency is occuring.
 
 ```{r}
 
@@ -109,16 +127,18 @@ blast_id_deg <- distinct(blastselect_deg, LOC, .keep_all = TRUE)
 
 ```
 
-### following code chunks ignored currently (as of 8/27/25)
+## following code chunks ignored currently (as of 8/27/25)
+Ignored because they are the steps once SPID information is obtained. 
 
-### if using blast instead of annotated genome file : 
+### creating smaller dataframe from master: 
 
+Creating more select dataframe from master list. This one needs to be updated -- ignore for now
 ```{r}
 # make a short file of just the DEG names and other desired data
 
-DEG_annot <- data.frame( LOC = DEG_Blast$LOC, geneName = DEG_Blast$SPID, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj, protein = DEG_Blast$protein, cds = DEG_Blast$cds  )
-
-head(DEG_annot)
+# DEG_annot <- data.frame( LOC = DEG_Blast$LOC, geneName = DEG_Blast$SPID, baseMean = DEG_Blast$baseMean, log2FoldChange = DEG_Blast$log2FoldChange, pvalue = DEG_Blast$pvalue, padj = DEG_Blast$padj, protein = DEG_Blast$protein, cds = DEG_Blast$cds  )
+# 
+# head(DEG_annot)
 
 
 ```
@@ -130,14 +150,14 @@ retrieving uniprot IDs
 
 # this is to get just the numbers from the geneName column for uniprot
 # so sp|S8FGV1|LAC... becomes just S8FGV1
-uniprot_id <-DEG_annot$geneName[!is.na(DEG_annot$geneName)]
-head(uniprot_id)
-
-# write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
-write.table(uniprot_id, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
-
-# and now for all the uniprot ids at the gene level that blast had
-write.table(blast$SPID, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+# uniprot_id <-DEG_annot$geneName[!is.na(DEG_annot$geneName)]
+# head(uniprot_id)
+# 
+# # write to table for uniprot import (or could just copy and paste but i imported a text file to uniprot just for my own santity to make sure everything was included)
+# write.table(uniprot_id, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+# 
+# # and now for all the uniprot ids at the gene level that blast had
+# write.table(blast$SPID, "../output/0821-uniprot_id_cds_genelevel_8ind23r_ToC.txt", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ```
 
@@ -147,23 +167,23 @@ GO annotations
 
 # retrieved our unirpot id GO file from the web interface https://www.uniprot.org/
 # importing and unzipping file here
-
-gunzip("../data/idmapping_2024_05_14.tsv.gz")
-
-GO_id <- read.csv("../data/idmapping_2024_05_14.tsv", sep = '\t', header = TRUE, row.names=NULL)
-head(GO_id)
+# 
+# gunzip("../data/idmapping_2024_05_14.tsv.gz")
+# 
+# GO_id <- read.csv("../data/idmapping_2024_05_14.tsv", sep = '\t', header = TRUE, row.names=NULL)
+# head(GO_id)
 ```
 
 ```{r}
 # join GO id info to our DEG_annot dataframe from earlier by the uniprot ids
 
-clam_GO_annotations <- merge(DEG_annot, GO_id, by.x = "uniprot_id", by.y = "Entry")
-head(clam_GO_annotations)
+# clam_GO_annotations <- merge(DEG_annot, GO_id, by.x = "uniprot_id", by.y = "Entry")
+# head(clam_GO_annotations)
 
 ```
 
 ```{r}
 # siic it looks all good so let's write to file
 
-write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0514.csv")
+# write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0514.csv")
 ```
