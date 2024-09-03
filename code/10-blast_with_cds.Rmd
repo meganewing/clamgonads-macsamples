@@ -101,7 +101,7 @@ grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
 Peeking at the output file
 
 ```{bash}
-head -2 ../output/0817-rphil_blastout_cds.tab
+head -10 ../output/0817-rphil_blastout_cds.tab
 ```
 
 ```{bash}
