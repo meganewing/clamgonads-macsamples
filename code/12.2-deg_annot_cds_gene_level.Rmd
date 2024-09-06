@@ -184,3 +184,28 @@ head(GO_id)
 
 write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0903.csv")
 ```
+
+
+## Ribosomal hunt
+
+Seems a lot of reads are being 'sucked up' by ribosomal rna. Read in full deseq2 results and order by name or base mean to see. 
+
+```{r}
+# read in full deseq2 results
+deseq_full <- read.csv("../output/0807-deseqres_ToC_8ind23r.tab", sep = "", row.names = 1)
+head()
+
+# read in full counts from deseq2
+deseq_counts <- read.csv("../output/0904-logcounts_all_8ind23r_ToC.csv", row.names = 1)
+head(deseq_counts)
+
+```
+creating combined dataframe
+
+```{r}
+
+stats_counts_full <- left_join(deseq_full, deseq_counts, by = row.names(deseq_full))
+head(stats_counts_full)
+
+```
+
