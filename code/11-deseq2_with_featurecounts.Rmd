@@ -296,7 +296,7 @@ dds2 <- DESeq(dds2)
 res2 <- results(dds2)
 
 # Save the results
-write.table(res2, "../output/0904-deseqres_ToC_8ind23r.tab", row.names = TRUE, col.names = TRUE)
+# write.table(res2, "../output/0904-deseqres_ToC_8ind23r.tab", row.names = TRUE, col.names = TRUE)
 
 ```
 
@@ -316,7 +316,7 @@ short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" 
 colnames(log_counts_all) <- short_col
 head(log_counts_all)
 
-write.csv(log_counts_all, "../output/0904-logcounts_all_8ind23r_ToC.csv")
+# write.csv(log_counts_all, "../output/0904-logcounts_all_8ind23r_ToC.csv")
 
 ```
 
@@ -334,7 +334,7 @@ sigresults <- res2[which(res2$padj < 0.05),]
 # Explore the results
 head(sigresults)
 
-write.table(sigresults,"../output/0807-DEGstats_ToC_8ind23r.tab", row.names = T, col.names = T)
+# write.table(sigresults,"../output/0807-DEGstats_ToC_8ind23r.tab", row.names = T, col.names = T)
 
 # peeking at sigresults
 sigres_table <- read.csv("../output/0807-DEGstats_ToC_8ind23r.tab", sep="")
@@ -342,22 +342,27 @@ head(sigres_table)
 
 sigDEGname <- row.names(sigres_table)
 
-write.table(sigDEGname, "../output/0807-DEGnames_ToC_8ind23r.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+# write.table(sigDEGname, "../output/0807-DEGnames_ToC_8ind23r.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ```
 
 ### Filtered: Heatmap of Top 25 Sig. DEG
 
 ```{r}
-# just top 25 genes
-top_genes <- row.names(res_ordered)[1:25]
+library(pheatmap)
+
+# order by padj
+res_ordered <- res2[order(res2$padj), ]
+
+# getting top 25
+all_deg <- row.names(res_ordered)[1:25]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
-counts_top <- counts[top_genes, ]
+counts_deg <- counts[all_deg, ]
 
 # Log-transform counts
-log_counts_top <- log2(counts_top + 1)
+log_counts_top <- log2(counts_deg + 1)
 
 # shorten col names
 short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43" ,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
@@ -365,17 +370,17 @@ short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" 
 colnames(log_counts_top) <- short_col
 head(log_counts_top)
 
-write.csv(log_counts_top, "../output/log_counts_top_filtered.csv")
+write.csv(log_counts_top, "../output/log_counts_top25_DEGs_8ind23r_ToC.csv")
 
 
 # Open a PNG device to save the plot
-png("../output/heatmap_top25_DEGs_filtered.png")
+png("../output/heatmap_top25_DEGs_8ind23r_ToC_clust.png", width = 1000, height = 1000)
 
 # Generate the heatmap
 pheatmap(log_counts_top, 
          scale = "row", 
-         cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
+         cluster_cols = T,
+         main = "Heatmap of Log2 Fold Change for Top 25 DEGs, Clustered")
 
 # Close the PNG device
 dev.off()
