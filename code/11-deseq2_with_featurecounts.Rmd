@@ -414,16 +414,54 @@ head(log_counts_deg)
 write.csv(log_counts_deg, "../output/0807-logcounts_allDEG_8ind23r_ToC.csv")
 
 # Open a PNG device to save the plot
-png("../output/0807-DEG_heatmap_8ind23r_ToC_clust.png", width = 1000, height = 1000)
+png("../output/0930-DEG_heatmap_8ind23r_ToC_clust3.png", width = 500, height = 700)
 
 # Generate the heatmap
 pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = TRUE,
-         main = "Heatmap All DEGs (padj < 0.05, 23r 8ind ToC clustered")
+         main = "Heatmap All DEGs (padj < 0.05) clustered")
 
 # Close the PNG device
 dev.off()
+
+```
+
+### Filtered: Heatmap with Full Gene Names
+
+```{r}
+# Assuming 'gene_loc' contains two columns: 
+# "V1" (the existing row names in log_counts_deg) 
+# and "V2" (the corresponding new gene names).
+
+gene_loc <- read.csv("../output/gene_loc.csv", header=FALSE)
+
+# Merge or match old names to gene names
+row_names_current <- rownames(log_counts_deg)
+# Create a named vector to map old names to gene names
+gene_mapping <- setNames(gene_loc$V2, gene_loc$V1)
+
+# Replace row names in log_counts_deg with gene names
+new_gene_names <- gene_mapping[row_names_current]
+rownames(log_counts_deg) <- new_gene_names
+
+# Check if row names have been successfully replaced
+head(log_counts_deg)
+
+# Open a PNG device to save the plot
+png("../output/0930-DEG_heatmap_8ind23r_ToC_clust_genename2.png", width = 700, height = 800)
+
+# Generate the heatmap with gene names as row labels
+pheatmap(log_counts_deg, 
+         scale = "row", 
+         cluster_cols = TRUE,
+         main = "Heatmap All DEGs (padj < 0.05), Clustered",
+         legend = TRUE,
+         legend_labels = "Log2Fold Expression")
+
+# Close the PNG device
+dev.off()
+
 
 ```
 
