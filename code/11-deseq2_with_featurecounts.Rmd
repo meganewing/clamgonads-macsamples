@@ -448,16 +448,34 @@ rownames(log_counts_deg) <- new_gene_names
 # Check if row names have been successfully replaced
 head(log_counts_deg)
 
-# Open a PNG device to save the plot
-png("../output/0930-DEG_heatmap_8ind23r_ToC_clust_genename2.png", width = 700, height = 800)
-
 # Generate the heatmap with gene names as row labels
+# Create the column annotation
+annotation <- data.frame(
+  Condition = factor(rep(c("ambient pH", "low pH"), each = 15))
+)
+
+# Set colors for the annotations (ambient pH -> lightpink, low pH -> lightblue)
+annotation_colors <- list(
+  Condition = c("ambient pH" = "green", "low pH" = "hotpink")
+)
+
+# Ensure row names of annotation match column names of the heatmap matrix
+rownames(annotation) <- colnames(log_counts_deg)
+
+# Open a PNG device to save the plot
+png("../output/0930-DEG_heatmap_8ind23r_ToC_clust_genename2.png", width = 1400, height = 1500)
+
+# Generate the heatmap
 pheatmap(log_counts_deg, 
          scale = "row", 
          cluster_cols = TRUE,
          main = "Heatmap All DEGs (padj < 0.05), Clustered",
+         annotation_col = annotation,  # Add the column annotations
+         annotation_colors = annotation_colors,  # Add annotation colors
          legend = TRUE,
-         legend_labels = "Log2Fold Expression")
+         border_color = "black",
+         fontsize = 20)
+
 
 # Close the PNG device
 dev.off()
