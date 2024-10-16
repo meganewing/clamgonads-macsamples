@@ -1,0 +1,55 @@
+---
+title: "single sample trim and alignment test"
+author: "Megan Ewing"
+date: "2024-10-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+trimming
+
+```{bash}
+
+# > cutadapt path
+
+	cutadapt \
+    	-j 0 \
+    	-o ../data/trimmed/M-C-193.trimmed.R1.fastq.gz \
+    	-p ../data/trimmed/M-C-193.trimmed.R2.fastq.gz \
+    	-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+    	-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+    	-q 15,10 \
+    	-m 40 \
+    	--trim-n \
+    	${IN}/${sample}_R1_*.fastq.gz \ #input file path R1
+    	${IN}/${sample}_R2_*.fastq.gz \ #input file path R2
+    	&> ${OUT}/cutadapt.${sample}.log #file path for log file 
+
+
+
+```
+
+
+alignment (hisat)
+
+```{bash}
+
+#index already built
+
+#running hisat
+/home/shared/hisat2-2.2.1/hisat2 \
+-x ../output/hisat/GCF_026571515.1_index \
+-p 48 \
+-1 ../data/raw/M-C-193_R1_001.fastq.gz \
+-2 ../data/raw/M-C-193_R2_001.fastq.gz \
+-S ../output/hisat/M-C-193.sam \
+2>&1 | tee ../output/hisat/hisat2_stats.txt
+
+
+
+```
+
+
