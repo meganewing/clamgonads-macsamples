@@ -13,21 +13,20 @@ trimming
 
 ```{bash}
 
-# > cutadapt path
+# > cutadapt path 'cutadapt'
 
-	cutadapt \
+	    /home/shared/cutadapt-venv/bin/cutadapt \
     	-j 0 \
-    	-o ../data/trimmed/M-C-193.trimmed.R1.fastq.gz \
-    	-p ../data/trimmed/M-C-193.trimmed.R2.fastq.gz \
+    	-o ../data/trimmed/M-C-216.trimmed.R1.fastq.gz \
+    	-p ../data/trimmed/M-C-216.trimmed.R2.fastq.gz \
     	-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
     	-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
     	-q 15,10 \
     	-m 40 \
     	--trim-n \
-    	${IN}/${sample}_R1_*.fastq.gz \ #input file path R1
-    	${IN}/${sample}_R2_*.fastq.gz \ #input file path R2
-    	&> ${OUT}/cutadapt.${sample}.log #file path for log file 
-
+    	../data/raw/M-C-216_R1_001.fastq.gz \
+      ../data/raw/M-C-216_R2_001.fastq.gz \
+    	# &> ../data/trimmed/cutadapt.log #file path for log file 
 
 
 ```
@@ -43,9 +42,9 @@ alignment (hisat)
 /home/shared/hisat2-2.2.1/hisat2 \
 -x ../output/hisat/GCF_026571515.1_index \
 -p 48 \
--1 ../data/raw/M-C-193_R1_001.fastq.gz \
--2 ../data/raw/M-C-193_R2_001.fastq.gz \
--S ../output/hisat/M-C-193.sam \
+-1 ../data/raw/M-C-216_R1_001.fastq.gz \
+-2 ../data/raw/M-C-216_R2_001.fastq.gz \
+-S ../output/hisat/M-C-216.sam \
 2>&1 | tee ../output/hisat/hisat2_stats.txt
 
 
