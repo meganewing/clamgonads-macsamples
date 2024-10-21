@@ -10,7 +10,7 @@ output: html_document
 # install.packages("BiocManager")
 # BiocManager::install("DESeq2")
 library(DESeq2)
-
+library(dplyr)
 ```
 
 ### Getting Matrix from Feature Counts
@@ -22,18 +22,31 @@ featureCounts <- read.csv("../output/STAR_count_data.csv", header=TRUE, row.name
 head(featureCounts)
 
 #subset from feature counts of just the count data
-countData <- featureCounts[, -(30:33)] 
+countData <- featureCounts[, -(31:33)] 
+
+```
+
+Now, the STAR_count_data.csv, has not yet corrected for the mislabing of M-C-193 as M-T-193. The following chunks assigns that column to a new position (among the other control samples) and renames it appropriately.
+
+```{r}
+
+#confirm location
+colnames(countData[16])
+
+#we're moving it to first postion
+countData <- countData[, c(16, 1:15, 17:ncol(countData))]
+head(countData)
 
 ```
 
 ```{r}
 metaData <- data.frame(
-  sample = c( "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329", "M.C.334", "M.C.337", "M.C.339", "M.C.358", "M.C.360", "M.C.363", "M.C.373", "M.C.482","M.C.488", "M.T.18",  "M.T.20", "M.T.22", "M.T.235", "M.T.245", "M.T.29", "M.T.31", "M.T.32", "M.T.399", "M.T.43", "M.T.44", "M.T.500", "M.T.7", "M.T.83", "M.T.8"),
-  treatment = c(rep("control", 14), rep("treatment", 15))
+  sample = c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329", "M.C.334", "M.C.337", "M.C.339", "M.C.358", "M.C.360", "M.C.363", "M.C.373", "M.C.482","M.C.488", "M.T.18",  "M.T.20", "M.T.22", "M.T.235", "M.T.245", "M.T.29", "M.T.31", "M.T.32", "M.T.399", "M.T.43", "M.T.44", "M.T.500", "M.T.7", "M.T.83", "M.T.8"),
+  treatment = c(rep("control", 15), rep("treatment", 15))
   )
 ```
 
-### Running DESeq
+### Running DESeq (initial, no pre-filter)
 
 ```{r}
 # Create a DESeqDataSet object
@@ -48,103 +61,6 @@ dds <- DESeq(dds)
 res <- results(dds)
 
 ```
-
-### Filtering for Significant results (padj \< 0.05)
-
-```{r}
-
-# Extract significant results
-sig_results <- res[which(res$padj < 0.05),]
-
-# Explore the results
-head(sig_results)
-
-write.table(sig_results,"../output/0513-DEG.tab", row.names = T, col.names = T)
-
-# full results (including non signifcant results)
-write.table(res, "../output/0709-DeSeq_AllCounts.tab", row.names = T, col.names = T)
-
-# reading in all results incl. non signifcant, just to take a peek
-restable <- read.csv("../output/0709-DeSeq_AllCounts.tab", sep="")
-
-```
-
-### Heatmap of Top 25 Sig. DEG (no pre filter)
-
-```{r}
-library(pheatmap)
-
-res_ordered <- res[order(res$padj), ]
-top_genes <- row.names(res_ordered)[1:25]
-
-# Extract counts and normalize
-counts <- counts(dds, normalized = TRUE)
-counts_top <- counts[top_genes, ]
-
-# Log-transform counts
-log_counts_top <- log2(counts_top + 1)
-
-# shorten col names
-short_col <- c("M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
-,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
-
-colnames(log_counts_top) <- short_col
-head(log_counts_top)
-
-write.csv(log_counts_top, "../output/log_counts_top.csv")
-
-
-# Open a PNG device to save the plot
-png("../output/heatmap_top25_DEGs.png")
-
-# Generate the heatmap
-pheatmap(log_counts_top, 
-         scale = "row", 
-         cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
-
-# Close the PNG device
-dev.off()
-
-```
-
-### Heatmap of All (54) sig. DEG (no pre filter)
-
-```{r}
-# ALL 54
-# getting a all (54 is total number, left it so there's less for me to edit code wise)
-all_genes <- row.names(res_ordered)[1:54]
-
-# Extract counts and normalize
-counts3 <- counts(dds, normalized = TRUE)
-counts_all <- counts3[all_genes, ]
-
-# Log-transform counts
-log_counts_all <- log2(counts_all + 1)
-
-# shorten col names
-short_col <- c("M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
-,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
-
-colnames(log_counts_all) <- short_col
-head(log_counts_all)
-
-write.csv(log_counts_all, "../output/log_counts_all.csv")
-
-# Open a PNG device to save the plot
-png("../output/heatmap_all_DEGs.png")
-
-# Generate the heatmap
-pheatmap(log_counts_all, 
-         scale = "row", 
-         cluster_cols = FALSE,
-         main = "Heatmap of Log2 Fold Change for Top 25 DEGs")
-
-# Close the PNG device
-dev.off()
-```
-
-![](http://127.0.0.1:10249/chunk_output/D3453FCD6c41c5b0/22487329/cula8vyttjp54/00003d.png)
 
 ### Filter Parameters: Determining Filter Parameters Based of Count Summary Stats
 
@@ -213,63 +129,6 @@ ggsave("../output/0807-histogram_of_read_counts_1to100.png")
 
 ```
 
-### Filtered: Running DESeq
-
-(hits must average 10+ reads across 3+ samples)
-
-```{r}
-# filtering so that only DEGs are identified if they average 10 reads across 3+ samples
-
-# Pre-filtering step
-# Calculate the mean read count per gene
-mean_counts <- rowMeans(counts(dds))
-
-# Filter genes that have at least 10 reads across 3 or more samples
-filter <- rowSums(counts(dds) >= 10) >= 5
-dds2 <- dds[filter, ]
-
-# Normalize the data
-dds2 <- DESeq(dds2)
-
-# Perform differential expression analysis
-res2 <- results(dds2)
-
-# save
-write.table(res2, "../output/0725-DeSeq_AllCounts_filtered.tab", row.names = T, col.names = T)
-
-
-```
-
-### Filtered: Running DESeq, Separated Treatment and Control
-
-Filtering the treatment and control groups separately so that we can filter by each group averaging X reads rather than all of the samples at once
-
-*need to alter chunk so it is filtering based off "at least 10 individuals have 5+ reads" rather than "an average of 5 reads across 10 individuals" – don't want one individual driving up the average*
-
-```{r}
-
-# Assume `dds` is your DESeqDataSet object
-
-# Pre-filtering step
-# Calculate the mean read count per gene in the control and treatment samples
-mean_counts_control <- rowMeans(counts(dds)[, 1:15])
-mean_counts_treatment <- rowMeans(counts(dds)[, 16:30])
-
-# Filter genes that have an average of at least 10 reads in either control or treatment samples
-filter <- (mean_counts_control >= 10) | (mean_counts_treatment >= 10)
-dds2 <- dds[filter, ]
-
-# Normalize the data
-dds2 <- DESeq(dds2)
-
-# Perform differential expression analysis
-res2 <- results(dds2)
-
-# Save the results
-write.table(res2, "../output/0727-deseqres_filteredbygroup.tab", row.names = TRUE, col.names = TRUE)
-
-```
-
 ### Filtered: Running DESeq, Seperated Treatment and Control – INDIVUDALS THRESHOLD, NOT AVERAGE BASED
 
 ```{r}
@@ -277,11 +136,11 @@ write.table(res2, "../output/0727-deseqres_filteredbygroup.tab", row.names = TRU
 
 # Pre-filtering step
 # Calculate the counts per gene in the control and treatment samples
-counts_control <- counts(dds)[, 1:14]
-counts_treatment <- counts(dds)[, 15:29]
+counts_control <- counts(dds)[, 1:15]
+counts_treatment <- counts(dds)[, 16:30]
 
 # Function to check if a gene has at least 8 samples with at least 10 reads
-has_min_samples <- function(counts, min_samples = 8, min_reads = 23) {
+has_min_samples <- function(counts, min_samples = 8, min_reads = 27) {
   rowSums(counts >= min_reads) >= min_samples
 }
 
@@ -296,7 +155,7 @@ dds2 <- DESeq(dds2)
 res2 <- results(dds2)
 
 # Save the results
-write.table(res2, "../output/1018-STAR-deseqres_ToC_8ind23r.tab", row.names = TRUE, col.names = TRUE)
+write.table(res2, "../output/1020-STAR-deseqres_ToC_8ind27r.tab", row.names = TRUE, col.names = TRUE)
 
 ```
 
@@ -316,7 +175,7 @@ short_col <- c("M.C.193", "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" 
 colnames(log_counts_all) <- short_col
 head(log_counts_all)
 
-# write.csv(log_counts_all, "../output/0904-logcounts_all_8ind23r_ToC.csv")
+write.csv(log_counts_all, "../output/1020-STAR-logcounts_all_8ind27r_ToC.csv")
 
 ```
 
@@ -325,7 +184,7 @@ head(log_counts_all)
 rename input/output files as needed
 
 ```{r}
-allcounts <- read.csv("../output/1018-STAR-deseqres_ToC_8ind23r.tab", sep="")
+allcounts <- read.csv("../output/1020-STAR-deseqres_ToC_8ind27r.tab", sep="")
 head(allcounts)
 
 # Extract significant results
@@ -334,15 +193,15 @@ sigresults <- res2[which(res2$padj < 0.05),]
 # Explore the results
 head(sigresults)
 
-write.table(sigresults,"../output/1018-STAR-DEGstats_ToC_8ind23r.tab", row.names = T, col.names = T)
+write.table(sigresults,"../output/1020-STAR-DEGstats_ToC_8ind27r.tab", row.names = T, col.names = T)
 
 # peeking at sigresults
-sigres_table <- read.csv("../output/1018-STAR-DEGstats_ToC_8ind23r.tab", sep="")
+sigres_table <- read.csv("../output/1020-STAR-DEGstats_ToC_8ind27r.tab", sep="")
 head(sigres_table)
 
 sigDEGname <- row.names(sigres_table)
 
-# write.table(sigDEGname, "../output/0807-DEGnames_ToC_8ind23r.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+# write.table(sigDEGname, "../output/0807-DEGnames_ToC_8ind27r.tab", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 ```
 
@@ -390,12 +249,12 @@ dev.off()
 
 ```{r}
 
-library(pheatmap)
+# library(pheatmap)
 
 res_ordered <- res2[order(res2$padj), ]
 
 # getting a all (replace 1:# with is total # of DEGs (can glance at stored value sigDEGname))
-all_deg <- row.names(res_ordered)[1:219]
+all_deg <- row.names(res_ordered)[1:48]
 
 # Extract counts and normalize
 counts <- counts(dds2, normalized = TRUE)
@@ -405,21 +264,21 @@ counts_deg <- counts[all_deg, ]
 log_counts_deg <- log2(counts_deg + 1)
 
 # shorten col names
-short_col <- c( "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
+short_col <- c("M.C.193",  "M.C.216", "M.C.218", "M.C.226", "M.C.306", "M.C.329" ,"M.C.334", "M.C.337" ,"M.C.339" ,"M.C.358" ,"M.C.360", "M.C.363", "M.C.373", "M.C.482", "M.C.488", "M.T.18",  "M.T.20" , "M.T.22" , "M.T.235" ,"M.T.245", "M.T.29"  ,"M.T.31" , "M.T.32" , "M.T.399", "M.T.43"
 ,"M.T.44" , "M.T.500", "M.T.7" ,  "M.T.83" , "M.T.8")
 
 colnames(log_counts_deg) <- short_col
 head(log_counts_deg)
 
-write.csv(log_counts_deg, "../output/0807-logcounts_allDEG_8ind23r_ToC.csv")
+write.csv(log_counts_deg, "../output/1020-STAR-logcounts_allDEG_8ind27r_ToC.csv")
 
 # Open a PNG device to save the plot
-png("../output/1018-STAR-DEG_heatmap_8ind23r_ToC.png", width = 500, height = 700)
+png("../output/1020-STAR-DEG_heatmap_8ind27r_ToC_clust.png", width = 500, height = 700)
 
 # Generate the heatmap
 pheatmap(log_counts_deg, 
          scale = "row", 
-         cluster_cols = FALSE,
+         cluster_cols = T,
          main = "Heatmap All DEGs (padj < 0.05) clustered")
 
 # Close the PNG device
