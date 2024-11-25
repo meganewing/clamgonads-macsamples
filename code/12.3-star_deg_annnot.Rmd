@@ -108,7 +108,7 @@ LOC### Info not present, adding back in here by pulling the headers from the cds
 
 # File paths
 cds_file <- "../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna"
-blast_output_file <- "../output/1125-GCF_026571515.1.tab"
+blast_output_file <- "../output/0817-rphil_blastout_cds.tab"
 output_file <- "../output/1125-blastout.tab"
 
 
@@ -153,6 +153,25 @@ head(output_file)
 stats <- read.csv("../output/1020-STAR-DEGstats_ToC_8ind27r.tab", sep="")
 head(stats)
 
+stats$LOC <- row.names(stats)
+head(stats)
+
 ```
 
-next step: join deg info to blast info by LOC#
+### join deg info to blast info by LOC#
+
+```{r}
+
+DEG_annot <- left_join(stats, annotated_results, by = "LOC")
+head(DEG_annot)
+
+
+
+```
+
+### gene level
+
+```{r}
+
+best_hits <- blast_results %>% group_by(gene) %>% dplyr::slice(which.min(evalue)) %>% separate(saccver, sep="\\|", into=c("na", "SPID", "gene.Uni"), remove = F) %>% dplyr::select(-na) %>% separate(gene.Uni, sep="_", into=c("gene.Uni", "species"), remove=T)
+```
