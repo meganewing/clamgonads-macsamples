@@ -25,12 +25,12 @@ library(dplyr)
 # Annotating our top DEGs using Blast and Uniprot Gene Ontology (GO) ids
 
 ### background
-The DEG list, stats, and counts, come from the deseq2 output with an padj > 0.05. Genes were pre filtered before deseq2 those that met the parameter of showing at least 8 individuals (over half) from each treatment (control n = 15, treatment n = 15) had 23 (median read count, after exluding all 0 values) reads. This was to limit outlier individuals in the data and get a padj that was more reflective of the actual differences is expression across treatments.
+
+The DEG list, stats, and counts, come from the deseq2 output with an padj \> 0.05. Genes were pre filtered before deseq2 those that met the parameter of showing at least 8 individuals (over half) from each treatment (control n = 15, treatment n = 15) had 23 (median read count, after exluding all 0 values) reads. This was to limit outlier individuals in the data and get a padj that was more reflective of the actual differences is expression across treatments.
 
 ### Combining DEG count and stats files
-While counts aren't needed for this, I chose to add it to the DEG matrix I'm creating so I could have a data frame that had all relevant data for the DEG. This is also to help minimize the number of dataframes/files to keep track of, as all of the DEG info is store in one. If I want a more select dataframe later on, I can create it.
-This reasoning is perhaps best compared to when folks create a "laundry list CV" that includes everything, then they create smaller CVs for each individual job.
-Could skip this step if you wanted to and just proceed with stats, or even just a list of the DEG names.
+
+While counts aren't needed for this, I chose to add it to the DEG matrix I'm creating so I could have a data frame that had all relevant data for the DEG. This is also to help minimize the number of dataframes/files to keep track of, as all of the DEG info is store in one. If I want a more select dataframe later on, I can create it. This reasoning is perhaps best compared to when folks create a "laundry list CV" that includes everything, then they create smaller CVs for each individual job. Could skip this step if you wanted to and just proceed with stats, or even just a list of the DEG names.
 
 ```{r}
 # for all counts: ../output/0807-logcounts_allDEG_8ind23r_ToC.csv
@@ -76,8 +76,7 @@ head(DEG)
 
 ### Adding Annotation Info
 
-I want to get associated gene info for the DEGs. To do this, I read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks.
-Since R.Phil has a published annotation, we are using that to get info about our DEGs.
+I want to get associated gene info for the DEGs. To do this, I read in [annotated genome file](https://www.ncbi.nlm.nih.gov/datasets/gene/GCF_026571515.1/). Its named blast here because originally it was a blast file, but I didn't want to go and edit all the following chunks. Since R.Phil has a published annotation, we are using that to get info about our DEGs.
 
 It is important to note that I originally used a blast file but switched because not all of the genes were getting a hit. These genes, however, when searched for on the annotated genome for rphil, did have matches. So I switched to the published annotation file.
 
@@ -89,8 +88,7 @@ blast <- read.delim("../data/ncbi_dataset.tsv")
 head(blast)
 ```
 
-Joining annotation file to list of DEGs. Again, this is to keep building our "master list" of DEG info.
-A smaller dataframe/file could be created with select data if needed -- this step is further down in this .rmd , currently commented out until GO terms can be added to the master list. 
+Joining annotation file to list of DEGs. Again, this is to keep building our "master list" of DEG info. A smaller dataframe/file could be created with select data if needed -- this step is further down in this .rmd , currently commented out until GO terms can be added to the master list.
 
 ```{r}
 # join by gene name
@@ -142,11 +140,13 @@ write.table(blast_id_deg$id, "../output/uniprot_id_cds_full.txt", sep = "\t", ro
 ```
 
 ## following code chunks ignored currently (as of 8/27/25)
-Ignored because they are the steps once SPID information is obtained. 
 
-### creating smaller dataframe from master, if desired: 
+Ignored because they are the steps once SPID information is obtained.
+
+### creating smaller dataframe from master, if desired:
 
 Creating more select dataframe from master list. This one needs to be updated -- ignore for now
+
 ```{r}
 # make a short file of just the DEG names and other desired data
 # 
@@ -155,7 +155,6 @@ Creating more select dataframe from master list. This one needs to be updated --
 # head(DEG_annot)
 
 ```
-
 
 GO annotations
 
@@ -185,10 +184,9 @@ head(GO_id)
 write.csv(clam_GO_annotations, "../output/clam_GO_annotations_cds_0903.csv")
 ```
 
-
 ## Ribosomal hunt
 
-Seems a lot of reads are being 'sucked up' by ribosomal rna. Read in full deseq2 results and order by name or base mean to see. 
+Seems a lot of reads are being 'sucked up' by ribosomal rna. Read in full deseq2 results and order by name or base mean to see.
 
 ```{r}
 # read in full deseq2 results
@@ -200,6 +198,7 @@ deseq_counts <- read.csv("../output/0904-logcounts_all_8ind23r_ToC.csv", row.nam
 head(deseq_counts)
 
 ```
+
 creating combined dataframe
 
 ```{r}
@@ -208,4 +207,3 @@ stats_counts_full <- left_join(deseq_full, deseq_counts, by = row.names(deseq_fu
 head(stats_counts_full)
 
 ```
-
