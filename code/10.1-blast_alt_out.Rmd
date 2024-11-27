@@ -1,0 +1,126 @@
+---
+title: "Running Blast with alternative output format"
+author: "Megan Ewing"
+date: "2024-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Database Creation
+
+[**This part is not unique to your file**]{.underline}, it is creating the database you will use when running blast on your file (ie. you don't need to change this section with each different file of interest).
+
+### Obtain Fasta (UniProt/Swiss-Prot)
+
+```{bash}
+cd ../data
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
+mv uniprot_sprot.fasta.gz uniprot_sprot_r2024_02.fasta.gz
+gunzip -k uniprot_sprot_r2024_02.fasta.gz
+```
+
+### Making the Database
+
+```{bash}
+mkdir ../blastdb
+/home/shared/ncbi-blast-2.15.0+/bin/makeblastdb \
+-in ../data/uniprot_sprot_r2024_02.fasta \
+-dbtype prot \
+-out ../blastdb/uniprot_sprot_r2024_02
+```
+
+## 2. Getting the query fasta file
+
+This is where you start [**changing things for your specific file**]{.underline} of interest.
+
+We already have our query rna fasta file.
+
+Taking a peek at that file via `head()` and getting a count of sequences
+
+```{bash}
+
+head -3 ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
+
+```
+
+```{bash}
+
+echo "How many sequences are there?"
+grep -c ">" ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna
+
+```
+
+## 3. Running Blastx
+
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/blastx \
+-query ../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna \
+-db ../blastdb/uniprot_sprot_r2024_02 \
+-out ../output/1125-GCF_026571515.1.tab \
+-evalue 1E-20 \
+-num_threads 20 \
+-max_target_seqs 1 \
+-outfmt 6
+```
+
+Peeking at the output file
+
+```{bash}
+head -2 ../output/1125-GCF_026571515.1.tab
+```
+
+```{bash}
+echo "Number of lines in output"
+wc -l ../output/1125-GCF_026571515.1.tab
+```
+
+## Pulling Gene ID from Headers (if needed)
+
+11/25 – using blast output from `../output/10-blast_with_cds.rmd`
+
+LOC### Info not present, adding back in here by pulling the headers from the cds file
+
+```{r}
+
+# File paths
+cds_file <- "../data/ncbi_dataset/data/GCF_026571515.1/cds_from_genomic.fna"
+blast_output_file <- "../output/0817-rphil_blastout_cds.tab"
+output_file <- "../output/1125-blastout.tab"
+
+
+# Step 1: Extract LOC### identifiers from the CDS file
+original_headers <- readLines(cds_file) %>%
+  .[grep("^>", .)] %>%
+  data.frame(header = ., stringsAsFactors = FALSE) %>%
+  mutate(
+    LOC = gsub(".*\\[gene=(LOC[0-9]+)\\].*", "\\1", header),
+    Query_ID = gsub("^>(\\S+).*", "\\1", header)
+  )
+
+
+# Step 2: Read BLAST results
+blast_results <- read.table(blast_output_file, header = FALSE, sep = "\t",
+                            col.names = c("Query_ID", "Subject_ID", "Identity", 
+                                          "Alignment_Length", "Mismatches", 
+                                          "Gap_Openings", "Query_Start", 
+                                          "Query_End", "Subject_Start", 
+                                          "Subject_End", "Evalue", "Bit_Score"))
+
+
+# Step 3: Annotate BLAST results with LOC### identifiers
+annotated_results <- blast_results %>%
+  left_join(original_headers, by = "Query_ID") %>%
+  select(LOC, everything())  # Move LOC to the first column
+
+# Step 4: Save annotated BLAST results
+write.table(annotated_results, file = output_file, quote = FALSE, sep = "\t", 
+            row.names = FALSE, col.names = TRUE)
+
+cat("Annotated BLAST results saved to:", output_file, "\n")
+head(output_file)
+
+
+```
