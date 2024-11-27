@@ -66,5 +66,40 @@ head(DEG_annot)
 row.names(DEG_annot) <- DEG_annot$LOC
 head(DEG_annot)
 
-write_csv(DEG_annot, "../output/1126-DEG_annot_star.csv", col_names = T)
+```
+
+### getting uniprot info
+
+first need to extract SwissProt IDs
+
+```{r}
+
+SPID <- DEG_annot$SPID
+head(SPID)
+
+write(SPID, "../output/1126-DEG_SPID_star.txt")
+
+
+```
+
+went to uniprot website, mapped SPIDs, saved as tsv and unzipped. importing here.
+
+```{r}
+
+uniprot <- read_delim("../output/idmapping_2024_11_27.tsv")
+head(uniprot)
+
+colnames(uniprot)[colnames(uniprot) == "From"] <- "SPID"
+head(uniprot)
+```
+
+### join blast and uniprot info
+
+```{r}
+
+DEG_annot2 <- left_join(DEG_annot, uniprot, by = "SPID")
+head(DEG_annot2)
+
+write_csv(DEG_annot2, "../output/1126-DEG_annot_star.csv", col_names = T)
+
 ```
