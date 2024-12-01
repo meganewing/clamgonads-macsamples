@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r setup, include=TRUE}
 install.packages("GO.db")
+BiocManager::install("GSEABase")
+
 
 library(BiocManager)
 library(GSEABase)
