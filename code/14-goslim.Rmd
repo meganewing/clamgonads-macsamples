@@ -1,0 +1,20 @@
+---
+title: "GO Slim"
+author: "Megan Ewing"
+date: "2024-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=TRUE}
+install.packages("GO.db")
+
+library(BiocManager)
+library(GSEABase)
+library(GO.db)
+library(knitr)
+library(tidyverse)
+```
