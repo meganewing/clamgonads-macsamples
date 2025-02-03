@@ -6,12 +6,18 @@ output: html_document
 ---
 
 ```{r}
+
+
+# only need to run install once
+
 # install.packages("dplyr")
 # install.packages("tidyverse")
 # install.packages("cowplot")
 # install.packages("ggpubr")
 # install.packages("rstatix")
-#packages
+
+# packages -- may need to load each time project is open 
+
   library(dplyr)
   library(tidyverse)
   library(tidyr)
@@ -28,12 +34,29 @@ output: html_document
 #note: in BBEdit I replaced the "Type" information: replaced "protein-coding" with "mito" for the first 13 genes 
 #which are the mitochondrial genes
 
-counts<- read.csv("../data/chisq_rnatypes/count_data_mitoedit.csv")
+counts<- read.csv("../data/chisq_rnatypes/count_data_mitoedit.csv", row.names = 1)
 head(counts)
 
 ```
 
-## T Tests
+### Transform Data to Proportions
+
+doing this to account for different library lengths in our reads. counts will be replaced by proportion of reads. For example, M.C.216 "gene 1" will no longer be count #, but will be count \# divided by the total number of reads for that sample.
+
+```{r}
+# create new dataframe of proportions from counts
+props <- counts  
+
+# Apply function to columns with count data (1-30) that will divide each cell by the total number of reads for that sample (ie. cell # / sum of col)
+props[, 1:30] <- lapply(counts[, 1:30], function(col) col / sum(col))  
+
+head(props)
+
+```
+
+### T Tests
+
+running t test for each RNA type with proportions. can change call from 'props' to 'counts' to run with raw counts if desired.
 
 ```{r}
 # Identify control and treatment columns
@@ -54,35 +77,37 @@ Separate dataframes for each gene type
 ```{r}
 
 # Subset the data for each gene type
-mito_df <- counts %>% filter(Type == "mito")
+mito_df <- props %>% filter(Type == "mito")
 head(mito_df)
 
-tRNA_df <- counts %>% filter(Type == "tRNA")
+tRNA_df <- props %>% filter(Type == "tRNA")
 head(tRNA_df)
 
-protein_df <- counts %>% filter(Type == "protein_coding")
+protein_df <- props %>% filter(Type == "protein_coding")
 head(protein_df)
 
-lncRNA_df <- counts %>% filter(Type == "lncRNA")
+lncRNA_df <- props %>% filter(Type == "lncRNA")
 head(lncRNA_df)
 
-rRNA_df <- counts %>% filter(Type =="rRNA")
+rRNA_df <- props %>% filter(Type =="rRNA")
 head(rRNA_df)
 
-snRNA_df <- counts %>% filter(Type =="snRNA")
+snRNA_df <- props %>% filter(Type =="snRNA")
 head(snRNA_df)
 
-snoRNA_df <- counts %>% filter(Type =="snoRNA")
+snoRNA_df <- props %>% filter(Type =="snoRNA")
 head(snoRNA_df)
 
-ncRNA_df <- counts %>% filter(Type =="ncRNA")
+ncRNA_df <- props %>% filter(Type =="ncRNA")
 head(ncRNA_df)
 
-pseudo_df <- counts %>% filter(Type =="transcribed_pseudogene")
+pseudo_df <- props %>% filter(Type =="transcribed_pseudogene")
 head(pseudo_df)
 ```
 
-Format for t test
+Format data frames to long, needed for t test
+
+note that "values_to" is named as "count" — it is *proportion* of counts
 
 ```{r}
 # Reshape data from wide to long format
@@ -194,9 +219,10 @@ print(ttest_results)
 
 ```
 
-testing corrections
+testing corrections for repeated testing (needed here).
 
 ```{r}
+
 # Apply Bonferroni correction
 ttest_results$bonferroni_adjusted_p <- p.adjust(ttest_results$p_value, method = "bonferroni")
 
@@ -211,8 +237,8 @@ print(ttest_results)
 ### Chi Square
 
 ```{r}
-# Summarize total counts by gene type
-summary_table <- counts %>%
+# Summarize total proportions by gene type
+summary_table <- props %>%
   group_by(Type) %>%
   summarise(
     control_sum = sum(M.C.193, M.C.216, M.C.218, M.C.226, M.C.306, M.C.329, M.C.334, M.C.337, M.C.339, M.C.358, M.C.360, M.C.363, M.C.373, M.C.482, M.C.488),
