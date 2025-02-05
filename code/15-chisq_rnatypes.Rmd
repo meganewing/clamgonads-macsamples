@@ -249,14 +249,47 @@ head(summary_table)
 ```
 
 ```{r}
+
+# the above table shows the frequencies for all samples, but since its totalling across 15 samples, the total frequency is 15, not 1. 
+# here, I divide by 15 to create new dataframe where frequencies for control vs. treatment sums to 1
+
+summary_table_new <- summary_table
+summary_table_new[, -1] <- summary_table_new[, -1] / 15  # Divides all numeric columns by 15
+summary_table_new
+
+```
+
+with frequencies for all 15 samples
+
+```{r}
 # Convert to a matrix for statistical testing
 contingency_table <- as.matrix(summary_table[, 2:3])
-rownames(contingency_table) <- summary_table$type
+rownames(contingency_table) <- summary_table$Type
 
-# Perform Chi-square test
+# Perform Chi-square test comparing control and treatment frequncies
 chi_result <- chisq.test(contingency_table)
 chi_result
 
+# Performing additonal chi square test where control frequencies are specified to be the "expected" frequencies
+chi_res2 <- chisq.test(x = as.matrix(summary_table$treatment_sum), p = as.matrix(summary_table$control_sum), rescale.p = TRUE)
+chi_res2 
+
+```
+
+Chi Square Test again but with frequencies divided by 15 (averaged across samples)
+
+```{r}
+# Convert to a matrix for statistical testing
+contingency_table <- as.matrix(summary_table_new[, 2:3])
+rownames(contingency_table) <- summary_table_new$Type
+
+# Perform Chi-square test comparing control and treatment frequncies
+chi_result <- chisq.test(contingency_table)
+chi_result
+
+# Performing additonal chi square test where control frequencies are specified to be the "expected" frequencies
+chi_res2 <- chisq.test(x = as.matrix(summary_table_new$treatment_sum), p = as.matrix(summary_table_new$control_sum), rescale.p = TRUE)
+chi_res2 
 ```
 
 Chi Square results showed that there was a difference by gene type between control and treatment, but T test for each individual gene type (when FDR adjusted for multiple comparisons) revealed this was due to protein coding RNA types.

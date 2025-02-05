@@ -134,3 +134,40 @@ deg25 <- deg[1:25, ]
 pheatmap(top25Counts,scale = "row",show_rownames = TRUE, treeheight_col = 1, fontsize_col = 12, fontsize_row = 5, cluster_cols = FALSE, cluster_rows = FALSE)
 
 ```
+
+### from chi square (step 15)
+
+this was me manually doing the fucntion to make sure nothing was going funky.
+```{r}
+props_new[1,1] <- sum(props[props$Type == "mito", c(1:14, 16)])
+props_new[2,1] <- sum(props[props$Type == "rRNA", c(1:14, 16)])
+props_new[3,1] <- sum(props[props$Type == "tRNA", c(1:14, 16)])
+props_new[4,1] <- sum(props[props$Type == "protein_coding", c(1:14, 16)])
+props_new[5,1] <- sum(props[props$Type == "lncRNA", c(1:14, 16)])
+props_new[6,1] <- sum(props[props$Type == "snoRNA", c(1:14, 16)])
+props_new[7,1] <- sum(props[props$Type == "snRNA", c(1:14, 16)])
+props_new[8,1] <- sum(props[props$Type == "ncRNA", c(1:14, 16)])
+props_new[9,1] <- sum(props[props$Type == "transcribed_pseudogene", c(1:14, 16)])
+
+
+sum(protein_df[c(1:14, 16)])
+
+
+props_new
+
+
+
+### chi sq 
+
+expected <- props[, c(1:14, 16)]
+observed <- props[, c(15, 17:30)]
+
+if (!all(dim(expected) == dim(observed))) {
+  stop("Expected and observed matrices must have the same dimensions.")
+}
+
+chisq.test(as.matrix(observed), p = as.matrix(expected), rescale.p = TRUE)
+
+```
+
+
