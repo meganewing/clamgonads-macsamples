@@ -17,6 +17,7 @@ output: html_document
 # install.packages("rstatix")
 # install.packages("BiocManager")
 # BiocManager::install("DESeq2")
+# install.packages("patchwork")
 
 # packages -- may need to load each time project is open 
 
@@ -399,3 +400,57 @@ chi_res2
 ```
 
 Chi Square results showed that there was a difference by gene type between control and treatment, but T test for each individual gene type (when FDR adjusted for multiple comparisons) revealed this was due to protein coding RNA types.
+
+### Pie Chart
+
+data prep
+
+```{r}
+pie_data <- props %>%
+  group_by(Type) %>%
+  summarise(
+    control_sum = sum(M.C.193, M.C.216, M.C.218, M.C.226, M.C.306, M.C.329, M.C.334, M.C.337, M.C.339, M.C.358, M.C.360, M.C.363, M.C.373, M.C.482, M.C.488),
+    treatment_sum = sum(M.T.18, M.T.20, M.T.22, M.T.235, M.T.245, M.T.31, M.T.32, M.T.399, M.T.43, M.T.44, M.T.500, M.T.7, M.T.8, M.T.83, M.T.29)
+  )
+
+pie_data[, -1] <- pie_data[, -1] / 15  # Divides all numeric columns by 15
+
+head(pie_data)
+```
+
+chart itself
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(patchwork)
+
+# Convert data to long format
+pie_long <- pie_data %>%
+  pivot_longer(cols = c(control_sum, treatment_sum), 
+               names_to = "group", 
+               values_to = "value")
+
+# Create the Control Pie Chart
+control_pie <- ggplot(pie_long %>% filter(group == "control_sum"), 
+                      aes(x = "", y = value, fill = factor(Type))) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  theme_void() +
+  ggtitle("Control") +
+  theme(legend.position = "right")
+
+# Create the Treatment Pie Chart
+treatment_pie <- ggplot(pie_long %>% filter(group == "treatment_sum"), 
+                        aes(x = "", y = value, fill = factor(Type))) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  theme_void() +
+  ggtitle("Treatment") +
+  theme(legend.position = "right")
+
+# Arrange the two plots side by side
+control_pie + treatment_pie
+
+```
