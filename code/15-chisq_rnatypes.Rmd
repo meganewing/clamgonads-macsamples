@@ -95,29 +95,47 @@ dds <- DESeqDataSetFromMatrix(countData,
 dds <- DESeq(dds)
 ```
 
-# normalization
+### normalization
 
 ```{r}
 
 dds <- estimateSizeFactors(dds)
 sizeFactors(dds)
-norm <- counts(dds, normalized=TRUE)
+norm <- as.matrix(counts(dds, normalized=TRUE))
 head(norm)
+
+#saving as csv 
+write.csv(norm, "../output/normalized_STAR.csv", row.names = T)
 
 ```
 
-# need to bring back in gene names and rna type
+### need to bring back in gene names and rna type
 
 ```{r}
 
+# importing norm as csv, because otherwise it stores as LHS or matrix (if specified). want as data frame for quicker processing
+# plus, don't need to run the normalization / deseq steps if you just load normalized file
+norm <- read.csv("../output/normalized_STAR.csv", row.names = 1)
+
+# making dataframe of just genes and RNA type
 types <- data.frame("gene" = rownames(counts), "Type" = counts$Type)
 head(types)
 
+# adding column to norm with gene names to prep for join
 norm$gene <- rownames(norm)
 head(norm)
 
-norm_counts <- left_join(x = counts, y = types)
+# joining datframes to create new one with normalized count data and RNA type
+norm_counts <- left_join(x = norm, y = types, by = "gene")
+head(norm_counts)
 
+# put genes back as row names
+row.names(norm_counts) <- norm_counts$gene
+head(norm_counts)
+
+# fixing naming scheme for sample 193
+colnames(norm_counts)[colnames(norm_counts) == 'M.T.193'] <- 'M.C.193'
+head(norm_counts)
 ```
 
 ### T Tests
@@ -141,39 +159,41 @@ treatment_cols  #peek
 Separate dataframes for each gene type
 
 ```{r}
+# specify data type here: proportion ('props'), raw counts ('counts'), or normalized counts ('norm_counts')
+datatype <- props
 
 # Subset the data for each gene type
-mito_df <- props %>% filter(Type == "mito")
+mito_df <- datatype %>% filter(Type == "mito")
 head(mito_df)
 
-tRNA_df <- props %>% filter(Type == "tRNA")
+tRNA_df <- datatype %>% filter(Type == "tRNA")
 head(tRNA_df)
 
-protein_df <- props %>% filter(Type == "protein_coding")
+protein_df <- datatype %>% filter(Type == "protein_coding")
 head(protein_df)
 
-lncRNA_df <- props %>% filter(Type == "lncRNA")
+lncRNA_df <- datatype %>% filter(Type == "lncRNA")
 head(lncRNA_df)
 
-rRNA_df <- props %>% filter(Type =="rRNA")
+rRNA_df <- datatype %>% filter(Type =="rRNA")
 head(rRNA_df)
 
-snRNA_df <- props %>% filter(Type =="snRNA")
+snRNA_df <- datatype %>% filter(Type =="snRNA")
 head(snRNA_df)
 
-snoRNA_df <- props %>% filter(Type =="snoRNA")
+snoRNA_df <- datatype %>% filter(Type =="snoRNA")
 head(snoRNA_df)
 
-ncRNA_df <- props %>% filter(Type =="ncRNA")
+ncRNA_df <- datatype %>% filter(Type =="ncRNA")
 head(ncRNA_df)
 
-pseudo_df <- props %>% filter(Type =="transcribed_pseudogene")
+pseudo_df <- datatype %>% filter(Type =="transcribed_pseudogene")
 head(pseudo_df)
 ```
 
 Format data frames to long, needed for t test
 
-note that "values_to" is named as "count" — it is *proportion* of counts
+note that "values_to" is named as "count" — it is *proportion* of counts if 'props' is specified above, *normalized counts* if 'norm_counts' is specified above, or *raw counts* if 'counts' is specified aboe
 
 ```{r}
 # Reshape data from wide to long format
@@ -300,14 +320,16 @@ print(ttest_results)
 
 ```
 
-### Chi Square
+### Chi Square – Specify Data Type Here
+
+Counts vs. Normalized Counts vs. Proportions
 
 ```{r}
-# Summarize total proportions by gene type
+# Summarize total proportions ('props') by gene type
 # can use 'counts' to run by counts
-# can use 'norm' to run by normalized counts 
+# can use 'norm_counts' to run by normalized counts 
 
-summary_table <- norm %>%
+summary_table <- norm_counts %>%
   group_by(Type) %>%
   summarise(
     control_sum = sum(M.C.193, M.C.216, M.C.218, M.C.226, M.C.306, M.C.329, M.C.334, M.C.337, M.C.339, M.C.358, M.C.360, M.C.363, M.C.373, M.C.482, M.C.488),
@@ -316,6 +338,20 @@ summary_table <- norm %>%
 
 head(summary_table)
 ```
+
+### Counts Chi Square
+
+```{r}
+# Convert to a matrix for statistical testing
+contingency_table <- as.matrix(summary_table[, 2:3])
+rownames(contingency_table) <- summary_table$Type
+
+# Perform Chi-square test comparing control and treatment frequncies
+chi_result <- chisq.test(contingency_table)
+chi_result
+```
+
+### Frequencies Chi Square
 
 ```{r}
 
