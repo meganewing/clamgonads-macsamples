@@ -49,10 +49,11 @@ doing this to account for different library lengths in our reads. counts will be
 
 ```{r}
 # create new dataframe of proportions from counts
-props <- counts  
+# can change this from counts to norm_counts to get proportion of normalized counts 
+props <- norm_counts  
 
 # Apply function to columns with count data (1-30) that will divide each cell by the total number of reads for that sample (ie. cell # / sum of col)
-props[, 1:30] <- lapply(counts[, 1:30], function(col) col / sum(col))  
+props[, 1:30] <- lapply(norm_counts[, 1:30], function(col) col / sum(col))  
 
 head(props)
 
