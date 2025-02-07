@@ -153,7 +153,9 @@ chi_result <- chisq.test(contingency_table)
 chi_result
 ```
 
-### Visualization
+### Visualizations
+
+#### Chi Square Stacked Bar Chart
 
 data prep
 
@@ -209,6 +211,46 @@ stacked_bar <- ggplot(pie_long, aes(x = group, y = value, fill = factor(Type))) 
 
 # Display plot
 stacked_bar
+
+
+```
+
+#### Normalized Count Summary Table
+
+```{r}
+# install.packages("gt")
+library("gt")
+```
+
+```{r}
+
+# Create the table
+gt_table <- gt(
+  summary_table,
+  rowname_col = "rowname",
+  groupname_col = dplyr::group_vars(summary_table),
+  process_md = FALSE,
+  caption = NULL,
+  rownames_to_stub = FALSE,
+  row_group_as_column = FALSE,
+  auto_align = TRUE,
+  id = NULL,
+  locale = getOption("gt.locale"),
+  row_group.sep = getOption("gt.row_group.sep", " - ")
+) %>%
+  cols_label(
+    Type = "Type", 
+    control_sum = "Unprimed",
+    treatment_sum = "Primed"
+  ) %>%
+  fmt_number(
+    columns = where(is.numeric),  # Format all numeric columns
+    decimals = 2,  # Adjust decimal places as needed
+    use_seps = TRUE  # Use thousands separators
+  )
+
+# Print the table
+gt_table
 
 
 ```
