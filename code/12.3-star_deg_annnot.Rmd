@@ -103,3 +103,31 @@ head(DEG_annot2)
 write_csv(DEG_annot2, "../output/1126-DEG_annot_star.csv", col_names = T)
 
 ```
+
+### add in ncbi info 
+
+```{r}
+
+uni <- read.csv("../output/1126-DEG_annot_star.csv")
+head(uni)
+
+ncbi <- read.csv("../data/chisq_rnatypes/count_data_mitoedit.csv", row.names = 1)
+head(ncbi)
+
+```
+
+```{r}
+# naming column in ncbi DF to prep for join using the LOC names contained in row names
+
+ncbi$LOC <- rownames(ncbi)
+head(ncbi)
+```
+
+```{r}
+# joining to get gene type info added to annotated DEG list
+
+DEG_list <- left_join(uni, ncbi, by = "LOC")
+head(DEG_list)
+
+write.csv(DEG_list, "../output/0211-DEG_list_STARcounts_DEGstats_RNAtypes.csv", col.names = T)
+```
