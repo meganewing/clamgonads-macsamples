@@ -35,6 +35,6 @@ All RNA seq raw data files can be found [here](https://gannet.fish.washington.ed
 ### General Workflow
 File names for the project are generally formatted `step#-description` for kallisto workflow. Additional workflow with hisat has similar naming scheme, though does not start back at step 1 and rather continues forward from the kallisto workflow. ie: `09- SRhisat_alignment.Rmd` is the start of the hisat workflow.
 
-Old file names / draft code names have no leading numbers and are descriptively named only.
+Old file names / draft code names have leading numbers of date for which the file was created and are descriptively named (eg. 1126-exampleheatmap.rmd would be a draft heatmap code that was created on 11/26).
 
 More workflow information available in the `code/` readme
