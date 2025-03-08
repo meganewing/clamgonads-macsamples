@@ -1,4 +1,4 @@
-# clamgonads-macsamples
+# R.Phil Egg Seq
 Analysis on R. phil oocyte samples provided by Mac. Based off this [isssue](https://github.com/RobertsLab/resources/issues/1748) 
 
 RNA seq analysis was done thrice: using kallisto , hisat, and STAR. STAR count matrixes were chosen for highest read mapping of the three. 
