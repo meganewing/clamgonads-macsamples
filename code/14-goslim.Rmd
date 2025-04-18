@@ -9,14 +9,38 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r setup, include=TRUE}
-install.packages("GO.db")
-BiocManager::install("GSEABase")
+```{r}
+# Install Bioconductor packages
+BiocManager::install("GO.db", ask = FALSE)
+BiocManager::install("GSEABase", ask = FALSE)
+
+# Install CRAN packages
+install.packages("knitr")
+install.packages("tidyverse")
 
 
-library(BiocManager)
+# Load all
 library(GSEABase)
 library(GO.db)
 library(knitr)
 library(tidyverse)
 ```
+
+
+
+```{r set-variables, eval=TRUE}
+# Column names corresponding to gene name/ID and GO IDs
+GO.ID.column <- "Gene.Ontology.IDs"
+gene.ID.column <- "gene_id"
+
+# Relative path or URL to input file
+input.file <- "https://raw.githubusercontent.com/grace-ac/paper-pycno-sswd-2021-2022/d1cdf13c36085868df4ef4b75d2b7de03ef08d1c/analyses/25-compare-2021-2022/DEGlist_same_2021-2022_forGOslim.tab"
+
+
+##### Official GO info - no need to change #####
+goslims_obo <- "goslim_generic.obo"
+goslims_url <- "http://current.geneontology.org/ontology/subsets/goslim_generic.obo"
+```
+
+
+
