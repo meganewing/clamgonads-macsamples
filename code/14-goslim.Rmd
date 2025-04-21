@@ -229,7 +229,45 @@ slim.count.df <- slimdf.sorted %>%
 str(slim.count.df)
 ```
 
+save as file
+```{r}
 
+write.csv(slimdf.sorted, "../output/GOslims.csv")
+
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(purrr)
+
+# Step 1: Make sure GO terms are clean and split into vectors
+slimdf_clean <- slimdf %>%
+  mutate(GO_list = str_split(str_replace_all(GO.IDs, "\\s+", ""), ";"))
+
+GeneID_GOID_clean <- GeneID_GOID %>%
+  mutate(GO_list = str_split(str_replace_all(GO_IDs, "\\s+", ""), ";"))
+
+# Step 2: Create a lookup table where each GO term maps to its LOC
+GO_to_LOC <- GeneID_GOID_clean %>%
+  unnest(GO_list) %>%
+  dplyr::select(GO_term = GO_list, LOC)
+
+# Step 3: For each row in slimdf, find matching LOCs
+slimdf_with_LOC <- slimdf_clean %>%
+  mutate(matching_LOCs = map(GO_list, function(go_terms) {
+    matched <- GO_to_LOC %>%
+      filter(GO_term %in% go_terms) %>%
+      pull(LOC)
+    unique(matched)  # Remove duplicates
+  })) %>%
+  mutate(matching_LOCs_str = sapply(matching_LOCs, function(x) paste(x, collapse = ";")))
+
+# View result
+head(slimdf_with_LOC)
+
+```
 
 
 
